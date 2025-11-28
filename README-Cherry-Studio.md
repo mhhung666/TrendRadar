@@ -1,144 +1,144 @@
 # TrendRadar × Cherry Studio 部署指南 🍒
 
-> **适合人群**：零编程基础的用户
-> **客户端**：Cherry Studio（免费开源 GUI 客户端）
+> **適合人羣**：零編程基礎的用戶
+> **客戶端**：Cherry Studio（免費開源 GUI 客戶端）
 
 ---
 
-## 📥 第一步：下载 Cherry Studio
+## 📥 第一步：下載 Cherry Studio
 
-### Windows 用户
+### Windows 用戶
 
-访问官网下载：https://cherry-ai.com/
-或直接下载：[Cherry-Studio-Windows.exe](https://github.com/kangfenmao/cherry-studio/releases/latest)
+訪問官網下載：https://cherry-ai.com/
+或直接下載：[Cherry-Studio-Windows.exe](https://github.com/kangfenmao/cherry-studio/releases/latest)
 
-### Mac 用户
+### Mac 用戶
 
-访问官网下载：https://cherry-ai.com/
-或直接下载：[Cherry-Studio-Mac.dmg](https://github.com/kangfenmao/cherry-studio/releases/latest)
+訪問官網下載：https://cherry-ai.com/
+或直接下載：[Cherry-Studio-Mac.dmg](https://github.com/kangfenmao/cherry-studio/releases/latest)
 
 
 ---
 
-## 📦 第二步：获取项目代码
+## 📦 第二步：獲取項目代碼
 
-为什么需要获取项目代码？
+爲什麼需要獲取項目代碼？
 
-AI 分析功能需要读取项目中的新闻数据才能工作。无论你使用 GitHub Actions 还是 Docker 部署，爬虫生成的新闻数据都保存在项目的 output 目录中。因此，在配置 MCP 服务器之前，需要先获取完整的项目代码（包含数据文件）。
+AI 分析功能需要讀取項目中的新聞數據才能工作。無論你使用 GitHub Actions 還是 Docker 部署，爬蟲生成的新聞數據都保存在項目的 output 目錄中。因此，在配置 MCP 服務器之前，需要先獲取完整的項目代碼（包含數據文件）。
 
-根据你的技术水平，可以选择以下任一方式获取：：
+根據你的技術水平，可以選擇以下任一方式獲取：：
 
-### 方法一：Git Clone（推荐给技术用户）
+### 方法一：Git Clone（推薦給技術用戶）
 
-如果你熟悉 Git，可以使用以下命令克隆项目：
+如果你熟悉 Git，可以使用以下命令克隆項目：
 
 ```bash
-git clone https://github.com/你的用户名/你的项目名.git
-cd 你的项目名
+git clone https://github.com/你的用戶名/你的項目名.git
+cd 你的項目名
 ```
 
-**优点**：
+**優點**：
 
-- 可以随时拉取一个命令就可以更新最新数据到本地了（`git pull`）
+- 可以隨時拉取一個命令就可以更新最新數據到本地了（`git pull`）
 
-### 方法二：直接下载 ZIP 压缩包（推荐给初学者）
-
-
-1. **访问 GitHub 项目页面**
-
-   - 项目链接：`https://github.com/你的用户名/你的项目名`
-
-2. **下载压缩包**
-
-   - 点击绿色的 "Code" 按钮
-   - 选择 "Download ZIP"
-   - 或直接访问：`https://github.com/你的用户名/你的项目名/archive/refs/heads/master.zip`
+### 方法二：直接下載 ZIP 壓縮包（推薦給初學者）
 
 
-**注意事项**：
+1. **訪問 GitHub 項目頁面**
 
-- 步骤稍微麻烦，后续更新数据需要重复上面步骤，然后覆盖本地数据(output 目录)
+   - 項目鏈接：`https://github.com/你的用戶名/你的項目名`
+
+2. **下載壓縮包**
+
+   - 點擊綠色的 "Code" 按鈕
+   - 選擇 "Download ZIP"
+   - 或直接訪問：`https://github.com/你的用戶名/你的項目名/archive/refs/heads/master.zip`
+
+
+**注意事項**：
+
+- 步驟稍微麻煩，後續更新數據需要重複上面步驟，然後覆蓋本地數據(output 目錄)
 
 ---
 
-## 🚀 第三步：一键部署 MCP 服务器
+## 🚀 第三步：一鍵部署 MCP 服務器
 
-### Windows 用户
+### Windows 用戶
 
-1. **双击运行**项目文件夹中的 `setup-windows.bat`，如果有问题，就运行 `setup-windows-en.bat`
-2. **等待安装完成**
-3. **记录显示的配置信息**（命令路径和参数）
+1. **雙擊運行**項目文件夾中的 `setup-windows.bat`，如果有問題，就運行 `setup-windows-en.bat`
+2. **等待安裝完成**
+3. **記錄顯示的配置信息**（命令路徑和參數）
 
-### Mac 用户
+### Mac 用戶
 
-1. **打开终端**（在启动台搜索"终端"）
-2. **拖拽**项目文件夹中的 `setup-mac.sh` 到终端窗口
-3. **按回车键**
-4. **记录显示的配置信息**
+1. **打開終端**（在啓動臺搜索"終端"）
+2. **拖拽**項目文件夾中的 `setup-mac.sh` 到終端窗口
+3. **按回車鍵**
+4. **記錄顯示的配置信息**
 
 ---
 
 ## 🔧 第四步：配置 Cherry Studio
 
-### 1. 打开设置
+### 1. 打開設置
 
-启动 Cherry Studio，点击右上角 ⚙️ **设置** 按钮
+啓動 Cherry Studio，點擊右上角 ⚙️ **設置** 按鈕
 
-### 2. 添加 MCP 服务器
+### 2. 添加 MCP 服務器
 
-在设置页面找到：**MCP** → 点击 **添加**
+在設置頁面找到：**MCP** → 點擊 **添加**
 
-### 3. 填写配置（重要！）
+### 3. 填寫配置（重要！）
 
-根据刚才的安装脚本显示的信息填写
+根據剛纔的安裝腳本顯示的信息填寫
 
-### 4. 保存并启用
+### 4. 保存並啓用
 
-- 点击 **保存** 按钮
-- 确保 MCP 服务器列表中的开关是 **开启** 状态 ✅
-
----
-
-## ✅ 第五步：验证是否成功
-
-### 1. 测试连接
-
-在 Cherry Studio 的对话框中输入：
-
-```
-帮我爬取最新的新闻
-```
-
-或者尝试其他测试命令：
-
-```
-搜索最近3天关于"人工智能"的新闻
-查找2025年1月的"特斯拉"相关报道
-分析"iPhone"的热度趋势
-```
-
-**提示**：当你说"最近3天"时，AI会自动计算日期范围并搜索。
-
-### 2. 成功标志
-
-如果配置成功，AI 会：
-
-- ✅ 调用 TrendRadar 工具
-- ✅ 返回真实的新闻数据
-- ✅ 显示平台、标题、排名等信息
-
+- 點擊 **保存** 按鈕
+- 確保 MCP 服務器列表中的開關是 **開啓** 狀態 ✅
 
 ---
 
-## 🎯 进阶配置
+## ✅ 第五步：驗證是否成功
 
-### HTTP 模式（可选）
+### 1. 測試連接
 
-如果需要远程访问或多客户端共享，可以使用 HTTP 模式：
+在 Cherry Studio 的對話框中輸入：
+
+```
+幫我爬取最新的新聞
+```
+
+或者嘗試其他測試命令：
+
+```
+搜索最近3天關於"人工智能"的新聞
+查找2025年1月的"特斯拉"相關報道
+分析"iPhone"的熱度趨勢
+```
+
+**提示**：當你說"最近3天"時，AI會自動計算日期範圍並搜索。
+
+### 2. 成功標誌
+
+如果配置成功，AI 會：
+
+- ✅ 調用 TrendRadar 工具
+- ✅ 返回真實的新聞數據
+- ✅ 顯示平臺、標題、排名等信息
+
+
+---
+
+## 🎯 進階配置
+
+### HTTP 模式（可選）
+
+如果需要遠程訪問或多客戶端共享，可以使用 HTTP 模式：
 
 #### Windows
 
-双击运行 `start-http.bat`
+雙擊運行 `start-http.bat`
 
 #### Mac
 
@@ -146,9 +146,9 @@ cd 你的项目名
 ./start-http.sh
 ```
 
-然后在 Cherry Studio 中配置：
+然後在 Cherry Studio 中配置：
 
 ```
-类型: streamableHttp
+類型: streamableHttp
 URL: http://localhost:3333/mcp
 ```

@@ -1,14 +1,14 @@
 name: Hot News Crawler
 on:
   schedule:
-    # ⚠️ 重要提示：我们使用的是 GitHub 官方提供的资源来进行的推送，而每个账号的资源是限额的
-    # 为了不被官方判定为滥用而面临封号的风险，不建议设置比半小时更短的执行间隔
+    # ⚠️ 重要提示：我們使用的是 GitHub 官方提供的資源來進行的推送，而每個賬號的資源是限額的
+    # 爲了不被官方判定爲濫用而面臨封號的風險，不建議設置比半小時更短的執行間隔
     #
-    # Cron 表达式示例（注意：GitHub Actions 使用 UTC 时间，北京时间需要减 8 小时）:
-    # - "0 * * * *"         # 每小时整点运行一次（实际有偏差）
-    # - "*/30 * * * *"      # 每 30 分钟执行一次
-    # - "*/30 0-14 * * *"   # 每天 UTC 0:00-14:00（北京时间 8:00-22:00），每 30 分钟运行一次
-    # - "0 0,6,12,18 * * *" # 每天 UTC 0:00,6:00,12:00,18:00（北京时间 8:00,14:00,20:00,次日2:00）
+    # Cron 表達式示例（注意：GitHub Actions 使用 UTC 時間，北京時間需要減 8 小時）:
+    # - "0 * * * *"         # 每小時整點運行一次（實際有偏差）
+    # - "*/30 * * * *"      # 每 30 分鐘執行一次
+    # - "*/30 0-14 * * *"   # 每天 UTC 0:00-14:00（北京時間 8:00-22:00），每 30 分鐘運行一次
+    # - "0 0,6,12,18 * * *" # 每天 UTC 0:00,6:00,12:00,18:00（北京時間 8:00,14:00,20:00,次日2:00）
     - cron: "0 * * * *"
   workflow_dispatch:
 
@@ -43,16 +43,16 @@ jobs:
           
       - name: Verify required files
         run: |
-          echo "🔍 检查必需的配置文件..."
+          echo "🔍 檢查必需的配置文件..."
           if [ ! -f config/config.yaml ]; then
-            echo "❌ 错误: config/config.yaml 文件不存在"
+            echo "❌ 錯誤: config/config.yaml 文件不存在"
             exit 1
           fi
           if [ ! -f config/frequency_words.txt ]; then
-            echo "❌ 错误: config/frequency_words.txt 文件不存在"
+            echo "❌ 錯誤: config/frequency_words.txt 文件不存在"
             exit 1
           fi
-          echo "✅ 配置文件检查通过"
+          echo "✅ 配置文件檢查通過"
           
       - name: Run crawler
         env:
@@ -85,13 +85,13 @@ jobs:
           echo "🔄 Syncing with remote (branch: $BRANCH_NAME)..."
           git fetch origin $BRANCH_NAME
           
-          # 保存当前更改
+          # 保存當前更改
           git stash --include-untracked || echo "Nothing to stash"
           
-          # 同步到远程最新
+          # 同步到遠程最新
           git reset --hard origin/$BRANCH_NAME
           
-          # 恢复本次更改
+          # 恢復本次更改
           git stash pop || echo "Nothing to pop"
           
           git add -A

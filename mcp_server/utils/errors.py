@@ -1,14 +1,14 @@
 """
-自定义错误类
+自定義錯誤類
 
-定义MCP Server使用的所有自定义异常类型。
+定義MCP Server使用的所有自定義異常類型。
 """
 
 from typing import Optional
 
 
 class MCPError(Exception):
-    """MCP工具错误基类"""
+    """MCP工具錯誤基類"""
 
     def __init__(self, message: str, code: str = "MCP_ERROR", suggestion: Optional[str] = None):
         super().__init__(message)
@@ -17,7 +17,7 @@ class MCPError(Exception):
         self.suggestion = suggestion
 
     def to_dict(self) -> dict:
-        """转换为字典格式"""
+        """轉換爲字典格式"""
         error_dict = {
             "code": self.code,
             "message": self.message
@@ -28,66 +28,66 @@ class MCPError(Exception):
 
 
 class DataNotFoundError(MCPError):
-    """数据不存在错误"""
+    """數據不存在錯誤"""
 
     def __init__(self, message: str, suggestion: Optional[str] = None):
         super().__init__(
             message=message,
             code="DATA_NOT_FOUND",
-            suggestion=suggestion or "请检查日期范围或等待爬取任务完成"
+            suggestion=suggestion or "請檢查日期範圍或等待爬取任務完成"
         )
 
 
 class InvalidParameterError(MCPError):
-    """参数无效错误"""
+    """參數無效錯誤"""
 
     def __init__(self, message: str, suggestion: Optional[str] = None):
         super().__init__(
             message=message,
             code="INVALID_PARAMETER",
-            suggestion=suggestion or "请检查参数格式是否正确"
+            suggestion=suggestion or "請檢查參數格式是否正確"
         )
 
 
 class ConfigurationError(MCPError):
-    """配置错误"""
+    """配置錯誤"""
 
     def __init__(self, message: str, suggestion: Optional[str] = None):
         super().__init__(
             message=message,
             code="CONFIGURATION_ERROR",
-            suggestion=suggestion or "请检查配置文件是否正确"
+            suggestion=suggestion or "請檢查配置文件是否正確"
         )
 
 
 class PlatformNotSupportedError(MCPError):
-    """平台不支持错误"""
+    """平臺不支持錯誤"""
 
     def __init__(self, platform: str):
         super().__init__(
-            message=f"平台 '{platform}' 不受支持",
+            message=f"平臺 '{platform}' 不受支持",
             code="PLATFORM_NOT_SUPPORTED",
-            suggestion="支持的平台: zhihu, weibo, douyin, bilibili, baidu, toutiao, qq, 36kr, sspai, hellogithub, thepaper"
+            suggestion="支持的平臺: zhihu, weibo, douyin, bilibili, baidu, toutiao, qq, 36kr, sspai, hellogithub, thepaper"
         )
 
 
 class CrawlTaskError(MCPError):
-    """爬取任务错误"""
+    """爬取任務錯誤"""
 
     def __init__(self, message: str, suggestion: Optional[str] = None):
         super().__init__(
             message=message,
             code="CRAWL_TASK_ERROR",
-            suggestion=suggestion or "请稍后重试或查看日志"
+            suggestion=suggestion or "請稍後重試或查看日誌"
         )
 
 
 class FileParseError(MCPError):
-    """文件解析错误"""
+    """文件解析錯誤"""
 
     def __init__(self, file_path: str, reason: str):
         super().__init__(
-            message=f"解析文件 {file_path} 失败: {reason}",
+            message=f"解析文件 {file_path} 失敗: {reason}",
             code="FILE_PARSE_ERROR",
-            suggestion="请检查文件格式是否正确"
+            suggestion="請檢查文件格式是否正確"
         )

@@ -1,7 +1,7 @@
 [project]
 name = "trendradar-mcp"
 version = "1.0.3"
-description = "TrendRadar MCP Server - 新闻热点聚合工具"
+description = "TrendRadar MCP Server - 新聞熱點聚合工具"
 requires-python = ">=3.10"
 dependencies = [
     "requests>=2.32.5,<3.0.0",

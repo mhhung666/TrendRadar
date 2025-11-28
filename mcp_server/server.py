@@ -1,8 +1,8 @@
 """
-TrendRadar MCP Server - FastMCP 2.0 实现
+TrendRadar MCP Server - FastMCP 2.0 實現
 
-使用 FastMCP 2.0 提供生产级 MCP 工具服务器。
-支持 stdio 和 HTTP 两种传输模式。
+使用 FastMCP 2.0 提供生產級 MCP 工具服務器。
+支持 stdio 和 HTTP 兩種傳輸模式。
 """
 
 import json
@@ -19,15 +19,15 @@ from .utils.date_parser import DateParser
 from .utils.errors import MCPError
 
 
-# 创建 FastMCP 2.0 应用
+# 創建 FastMCP 2.0 應用
 mcp = FastMCP('trendradar-news')
 
-# 全局工具实例（在第一次请求时初始化）
+# 全局工具實例（在第一次請求時初始化）
 _tools_instances = {}
 
 
 def _get_tools(project_root: Optional[str] = None):
-    """获取或创建工具实例（单例模式）"""
+    """獲取或創建工具實例（單例模式）"""
     if not _tools_instances:
         _tools_instances['data'] = DataQueryTools(project_root)
         _tools_instances['analytics'] = AnalyticsTools(project_root)
@@ -37,55 +37,55 @@ def _get_tools(project_root: Optional[str] = None):
     return _tools_instances
 
 
-# ==================== 日期解析工具（优先调用）====================
+# ==================== 日期解析工具（優先調用）====================
 
 @mcp.tool
 async def resolve_date_range(
     expression: str
 ) -> str:
     """
-    【推荐优先调用】将自然语言日期表达式解析为标准日期范围
+    【推薦優先調用】將自然語言日期表達式解析爲標準日期範圍
 
-    **为什么需要这个工具？**
-    用户经常使用"本周"、"最近7天"等自然语言表达日期，但 AI 模型自己计算日期
-    可能导致不一致的结果。此工具在服务器端使用精确的当前时间计算，确保所有
-    AI 模型获得一致的日期范围。
+    **爲什麼需要這個工具？**
+    用戶經常使用"本週"、"最近7天"等自然語言表達日期，但 AI 模型自己計算日期
+    可能導致不一致的結果。此工具在服務器端使用精確的當前時間計算，確保所有
+    AI 模型獲得一致的日期範圍。
 
-    **推荐使用流程：**
-    1. 用户说"分析AI本周的情感倾向"
-    2. AI 调用 resolve_date_range("本周") → 获取精确日期范围
-    3. AI 调用 analyze_sentiment(topic="ai", date_range=上一步返回的date_range)
+    **推薦使用流程：**
+    1. 用戶說"分析AI本週的情感傾向"
+    2. AI 調用 resolve_date_range("本週") → 獲取精確日期範圍
+    3. AI 調用 analyze_sentiment(topic="ai", date_range=上一步返回的date_range)
 
     Args:
-        expression: 自然语言日期表达式，支持：
-            - 单日: "今天", "昨天", "today", "yesterday"
-            - 周: "本周", "上周", "this week", "last week"
+        expression: 自然語言日期表達式，支持：
+            - 單日: "今天", "昨天", "today", "yesterday"
+            - 周: "本週", "上週", "this week", "last week"
             - 月: "本月", "上月", "this month", "last month"
             - 最近N天: "最近7天", "最近30天", "last 7 days", "last 30 days"
-            - 动态: "最近5天", "last 10 days"（任意天数）
+            - 動態: "最近5天", "last 10 days"（任意天數）
 
     Returns:
-        JSON格式的日期范围，可直接用于其他工具的 date_range 参数：
+        JSON格式的日期範圍，可直接用於其他工具的 date_range 參數：
         {
             "success": true,
-            "expression": "本周",
+            "expression": "本週",
             "date_range": {
                 "start": "2025-11-18",
                 "end": "2025-11-26"
             },
             "current_date": "2025-11-26",
-            "description": "本周（周一到周日，11-18 至 11-26）"
+            "description": "本週（週一到週日，11-18 至 11-26）"
         }
 
     Examples:
-        用户："分析AI本周的情感倾向"
-        AI调用步骤：
-        1. resolve_date_range("本周")
+        用戶："分析AI本週的情感傾向"
+        AI調用步驟：
+        1. resolve_date_range("本週")
            → {"date_range": {"start": "2025-11-18", "end": "2025-11-26"}, ...}
         2. analyze_sentiment(topic="ai", date_range={"start": "2025-11-18", "end": "2025-11-26"})
 
-        用户："看看最近7天的特斯拉新闻"
-        AI调用步骤：
+        用戶："看看最近7天的特斯拉新聞"
+        AI調用步驟：
         1. resolve_date_range("最近7天")
            → {"date_range": {"start": "2025-11-20", "end": "2025-11-26"}, ...}
         2. search_news(query="特斯拉", date_range={"start": "2025-11-20", "end": "2025-11-26"})
@@ -108,7 +108,7 @@ async def resolve_date_range(
         }, ensure_ascii=False, indent=2)
 
 
-# ==================== 数据查询工具 ====================
+# ==================== 數據查詢工具 ====================
 
 @mcp.tool
 async def get_latest_news(
@@ -117,31 +117,31 @@ async def get_latest_news(
     include_url: bool = False
 ) -> str:
     """
-    获取最新一批爬取的新闻数据，快速了解当前热点
+    獲取最新一批爬取的新聞數據，快速瞭解當前熱點
 
     Args:
-        platforms: 平台ID列表，如 ['zhihu', 'weibo', 'douyin']
-                   - 不指定时：使用 config.yaml 中配置的所有平台
-                   - 支持的平台来自 config/config.yaml 的 platforms 配置
-                   - 每个平台都有对应的name字段（如"知乎"、"微博"），方便AI识别
-        limit: 返回条数限制，默认50，最大1000
-               注意：实际返回数量可能少于请求值，取决于当前可用的新闻总数
-        include_url: 是否包含URL链接，默认False（节省token）
+        platforms: 平臺ID列表，如 ['zhihu', 'weibo', 'douyin']
+                   - 不指定時：使用 config.yaml 中配置的所有平臺
+                   - 支持的平臺來自 config/config.yaml 的 platforms 配置
+                   - 每個平臺都有對應的name字段（如"知乎"、"微博"），方便AI識別
+        limit: 返回條數限制，默認50，最大1000
+               注意：實際返回數量可能少於請求值，取決於當前可用的新聞總數
+        include_url: 是否包含URL鏈接，默認False（節省token）
 
     Returns:
-        JSON格式的新闻列表
+        JSON格式的新聞列表
 
-    **重要：数据展示建议**
-    本工具会返回完整的新闻列表（通常50条）给你。但请注意：
-    - **工具返回**：完整的50条数据 ✅
-    - **建议展示**：向用户展示全部数据，除非用户明确要求总结
-    - **用户期望**：用户可能需要完整数据，请谨慎总结
+    **重要：數據展示建議**
+    本工具會返回完整的新聞列表（通常50條）給你。但請注意：
+    - **工具返回**：完整的50條數據 ✅
+    - **建議展示**：向用戶展示全部數據，除非用戶明確要求總結
+    - **用戶期望**：用戶可能需要完整數據，請謹慎總結
 
-    **何时可以总结**：
-    - 用户明确说"给我总结一下"或"挑重点说"
-    - 数据量超过100条时，可先展示部分并询问是否查看全部
+    **何時可以總結**：
+    - 用戶明確說"給我總結一下"或"挑重點說"
+    - 數據量超過100條時，可先展示部分並詢問是否查看全部
 
-    **注意**：如果用户询问"为什么只显示了部分"，说明他们需要完整数据
+    **注意**：如果用戶詢問"爲什麼只顯示了部分"，說明他們需要完整數據
     """
     tools = _get_tools()
     result = tools['data'].get_latest_news(platforms=platforms, limit=limit, include_url=include_url)
@@ -154,19 +154,19 @@ async def get_trending_topics(
     mode: str = 'current'
 ) -> str:
     """
-    获取个人关注词的新闻出现频率统计（基于 config/frequency_words.txt）
+    獲取個人關注詞的新聞出現頻率統計（基於 config/frequency_words.txt）
 
-    注意：本工具不是自动提取新闻热点，而是统计你在 config/frequency_words.txt 中
-    设置的个人关注词在新闻中出现的频率。你可以自定义这个关注词列表。
+    注意：本工具不是自動提取新聞熱點，而是統計你在 config/frequency_words.txt 中
+    設置的個人關注詞在新聞中出現的頻率。你可以自定義這個關注詞列表。
 
     Args:
-        top_n: 返回TOP N关注词，默认10
-        mode: 模式选择
-            - daily: 当日累计数据统计
-            - current: 最新一批数据统计（默认）
+        top_n: 返回TOP N關注詞，默認10
+        mode: 模式選擇
+            - daily: 當日累計數據統計
+            - current: 最新一批數據統計（默認）
 
     Returns:
-        JSON格式的关注词频率统计列表
+        JSON格式的關注詞頻率統計列表
     """
     tools = _get_tools()
     result = tools['data'].get_trending_topics(top_n=top_n, mode=mode)
@@ -181,35 +181,35 @@ async def get_news_by_date(
     include_url: bool = False
 ) -> str:
     """
-    获取指定日期的新闻数据，用于历史数据分析和对比
+    獲取指定日期的新聞數據，用於歷史數據分析和對比
 
     Args:
-        date_query: 日期查询，可选格式:
-            - 自然语言: "今天", "昨天", "前天", "3天前"
-            - 标准日期: "2024-01-15", "2024/01/15"
-            - 默认值: "今天"（节省token）
-        platforms: 平台ID列表，如 ['zhihu', 'weibo', 'douyin']
-                   - 不指定时：使用 config.yaml 中配置的所有平台
-                   - 支持的平台来自 config/config.yaml 的 platforms 配置
-                   - 每个平台都有对应的name字段（如"知乎"、"微博"），方便AI识别
-        limit: 返回条数限制，默认50，最大1000
-               注意：实际返回数量可能少于请求值，取决于指定日期的新闻总数
-        include_url: 是否包含URL链接，默认False（节省token）
+        date_query: 日期查詢，可選格式:
+            - 自然語言: "今天", "昨天", "前天", "3天前"
+            - 標準日期: "2024-01-15", "2024/01/15"
+            - 默認值: "今天"（節省token）
+        platforms: 平臺ID列表，如 ['zhihu', 'weibo', 'douyin']
+                   - 不指定時：使用 config.yaml 中配置的所有平臺
+                   - 支持的平臺來自 config/config.yaml 的 platforms 配置
+                   - 每個平臺都有對應的name字段（如"知乎"、"微博"），方便AI識別
+        limit: 返回條數限制，默認50，最大1000
+               注意：實際返回數量可能少於請求值，取決於指定日期的新聞總數
+        include_url: 是否包含URL鏈接，默認False（節省token）
 
     Returns:
-        JSON格式的新闻列表，包含标题、平台、排名等信息
+        JSON格式的新聞列表，包含標題、平臺、排名等信息
 
-    **重要：数据展示建议**
-    本工具会返回完整的新闻列表（通常50条）给你。但请注意：
-    - **工具返回**：完整的50条数据 ✅
-    - **建议展示**：向用户展示全部数据，除非用户明确要求总结
-    - **用户期望**：用户可能需要完整数据，请谨慎总结
+    **重要：數據展示建議**
+    本工具會返回完整的新聞列表（通常50條）給你。但請注意：
+    - **工具返回**：完整的50條數據 ✅
+    - **建議展示**：向用戶展示全部數據，除非用戶明確要求總結
+    - **用戶期望**：用戶可能需要完整數據，請謹慎總結
 
-    **何时可以总结**：
-    - 用户明确说"给我总结一下"或"挑重点说"
-    - 数据量超过100条时，可先展示部分并询问是否查看全部
+    **何時可以總結**：
+    - 用戶明確說"給我總結一下"或"挑重點說"
+    - 數據量超過100條時，可先展示部分並詢問是否查看全部
 
-    **注意**：如果用户询问"为什么只显示了部分"，说明他们需要完整数据
+    **注意**：如果用戶詢問"爲什麼只顯示了部分"，說明他們需要完整數據
     """
     tools = _get_tools()
     result = tools['data'].get_news_by_date(
@@ -222,7 +222,7 @@ async def get_news_by_date(
 
 
 
-# ==================== 高级数据分析工具 ====================
+# ==================== 高級數據分析工具 ====================
 
 @mcp.tool
 async def analyze_topic_trend(
@@ -236,41 +236,41 @@ async def analyze_topic_trend(
     confidence_threshold: float = 0.7
 ) -> str:
     """
-    统一话题趋势分析工具 - 整合多种趋势分析模式
+    統一話題趨勢分析工具 - 整合多種趨勢分析模式
 
-    **重要：日期范围处理**
-    当用户使用"本周"、"最近7天"等自然语言时，请先调用 resolve_date_range 工具获取精确日期：
-    1. 调用 resolve_date_range("本周") → 获取 {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
-    2. 将返回的 date_range 传入本工具
+    **重要：日期範圍處理**
+    當用戶使用"本週"、"最近7天"等自然語言時，請先調用 resolve_date_range 工具獲取精確日期：
+    1. 調用 resolve_date_range("本週") → 獲取 {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
+    2. 將返回的 date_range 傳入本工具
 
     Args:
-        topic: 话题关键词（必需）
-        analysis_type: 分析类型，可选值：
-            - "trend": 热度趋势分析（追踪话题的热度变化）
-            - "lifecycle": 生命周期分析（从出现到消失的完整周期）
-            - "viral": 异常热度检测（识别突然爆火的话题）
-            - "predict": 话题预测（预测未来可能的热点）
-        date_range: 日期范围（trend和lifecycle模式），可选
+        topic: 話題關鍵詞（必需）
+        analysis_type: 分析類型，可選值：
+            - "trend": 熱度趨勢分析（追蹤話題的熱度變化）
+            - "lifecycle": 生命週期分析（從出現到消失的完整週期）
+            - "viral": 異常熱度檢測（識別突然爆火的話題）
+            - "predict": 話題預測（預測未來可能的熱點）
+        date_range: 日期範圍（trend和lifecycle模式），可選
                     - **格式**: {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
-                    - **获取方式**: 调用 resolve_date_range 工具解析自然语言日期
-                    - **默认**: 不指定时默认分析最近7天
-        granularity: 时间粒度（trend模式），默认"day"（仅支持 day，因为底层数据按天聚合）
-        threshold: 热度突增倍数阈值（viral模式），默认3.0
-        time_window: 检测时间窗口小时数（viral模式），默认24
-        lookahead_hours: 预测未来小时数（predict模式），默认6
-        confidence_threshold: 置信度阈值（predict模式），默认0.7
+                    - **獲取方式**: 調用 resolve_date_range 工具解析自然語言日期
+                    - **默認**: 不指定時默認分析最近7天
+        granularity: 時間粒度（trend模式），默認"day"（僅支持 day，因爲底層數據按天聚合）
+        threshold: 熱度突增倍數閾值（viral模式），默認3.0
+        time_window: 檢測時間窗口小時數（viral模式），默認24
+        lookahead_hours: 預測未來小時數（predict模式），默認6
+        confidence_threshold: 置信度閾值（predict模式），默認0.7
 
     Returns:
-        JSON格式的趋势分析结果
+        JSON格式的趨勢分析結果
 
     Examples:
-        用户："分析AI本周的趋势"
-        推荐调用流程：
-        1. resolve_date_range("本周") → {"date_range": {"start": "2025-11-18", "end": "2025-11-26"}}
+        用戶："分析AI本週的趨勢"
+        推薦調用流程：
+        1. resolve_date_range("本週") → {"date_range": {"start": "2025-11-18", "end": "2025-11-26"}}
         2. analyze_topic_trend(topic="AI", date_range={"start": "2025-11-18", "end": "2025-11-26"})
 
-        用户："看看特斯拉最近30天的热度"
-        推荐调用流程：
+        用戶："看看特斯拉最近30天的熱度"
+        推薦調用流程：
         1. resolve_date_range("最近30天") → {"date_range": {"start": "2025-10-28", "end": "2025-11-26"}}
         2. analyze_topic_trend(topic="特斯拉", analysis_type="lifecycle", date_range=...)
     """
@@ -297,23 +297,23 @@ async def analyze_data_insights(
     top_n: int = 20
 ) -> str:
     """
-    统一数据洞察分析工具 - 整合多种数据分析模式
+    統一數據洞察分析工具 - 整合多種數據分析模式
 
     Args:
-        insight_type: 洞察类型，可选值：
-            - "platform_compare": 平台对比分析（对比不同平台对话题的关注度）
-            - "platform_activity": 平台活跃度统计（统计各平台发布频率和活跃时间）
-            - "keyword_cooccur": 关键词共现分析（分析关键词同时出现的模式）
-        topic: 话题关键词（可选，platform_compare模式适用）
-        date_range: **【对象类型】** 日期范围（可选）
+        insight_type: 洞察類型，可選值：
+            - "platform_compare": 平臺對比分析（對比不同平臺對話題的關注度）
+            - "platform_activity": 平臺活躍度統計（統計各平臺發佈頻率和活躍時間）
+            - "keyword_cooccur": 關鍵詞共現分析（分析關鍵詞同時出現的模式）
+        topic: 話題關鍵詞（可選，platform_compare模式適用）
+        date_range: **【對象類型】** 日期範圍（可選）
                     - **格式**: {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
                     - **示例**: {"start": "2025-01-01", "end": "2025-01-07"}
-                    - **重要**: 必须是对象格式，不能传递整数
-        min_frequency: 最小共现频次（keyword_cooccur模式），默认3
-        top_n: 返回TOP N结果（keyword_cooccur模式），默认20
+                    - **重要**: 必須是對象格式，不能傳遞整數
+        min_frequency: 最小共現頻次（keyword_cooccur模式），默認3
+        top_n: 返回TOP N結果（keyword_cooccur模式），默認20
 
     Returns:
-        JSON格式的数据洞察分析结果
+        JSON格式的數據洞察分析結果
 
     Examples:
         - analyze_data_insights(insight_type="platform_compare", topic="人工智能")
@@ -341,47 +341,47 @@ async def analyze_sentiment(
     include_url: bool = False
 ) -> str:
     """
-    分析新闻的情感倾向和热度趋势
+    分析新聞的情感傾向和熱度趨勢
 
-    **重要：日期范围处理**
-    当用户使用"本周"、"最近7天"等自然语言时，请先调用 resolve_date_range 工具获取精确日期：
-    1. 调用 resolve_date_range("本周") → 获取 {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
-    2. 将返回的 date_range 传入本工具
+    **重要：日期範圍處理**
+    當用戶使用"本週"、"最近7天"等自然語言時，請先調用 resolve_date_range 工具獲取精確日期：
+    1. 調用 resolve_date_range("本週") → 獲取 {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
+    2. 將返回的 date_range 傳入本工具
 
     Args:
-        topic: 话题关键词（可选）
-        platforms: 平台ID列表，如 ['zhihu', 'weibo', 'douyin']
-                   - 不指定时：使用 config.yaml 中配置的所有平台
-                   - 支持的平台来自 config/config.yaml 的 platforms 配置
-                   - 每个平台都有对应的name字段（如"知乎"、"微博"），方便AI识别
-        date_range: 日期范围（可选）
+        topic: 話題關鍵詞（可選）
+        platforms: 平臺ID列表，如 ['zhihu', 'weibo', 'douyin']
+                   - 不指定時：使用 config.yaml 中配置的所有平臺
+                   - 支持的平臺來自 config/config.yaml 的 platforms 配置
+                   - 每個平臺都有對應的name字段（如"知乎"、"微博"），方便AI識別
+        date_range: 日期範圍（可選）
                     - **格式**: {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
-                    - **获取方式**: 调用 resolve_date_range 工具解析自然语言日期
-                    - **默认**: 不指定则默认查询今天的数据
-        limit: 返回新闻数量，默认50，最大100
-               注意：本工具会对新闻标题进行去重（同一标题在不同平台只保留一次），
-               因此实际返回数量可能少于请求的 limit 值
-        sort_by_weight: 是否按热度权重排序，默认True
-        include_url: 是否包含URL链接，默认False（节省token）
+                    - **獲取方式**: 調用 resolve_date_range 工具解析自然語言日期
+                    - **默認**: 不指定則默認查詢今天的數據
+        limit: 返回新聞數量，默認50，最大100
+               注意：本工具會對新聞標題進行去重（同一標題在不同平臺只保留一次），
+               因此實際返回數量可能少於請求的 limit 值
+        sort_by_weight: 是否按熱度權重排序，默認True
+        include_url: 是否包含URL鏈接，默認False（節省token）
 
     Returns:
-        JSON格式的分析结果，包含情感分布、热度趋势和相关新闻
+        JSON格式的分析結果，包含情感分佈、熱度趨勢和相關新聞
 
     Examples:
-        用户："分析AI本周的情感倾向"
-        推荐调用流程：
-        1. resolve_date_range("本周") → {"date_range": {"start": "2025-11-18", "end": "2025-11-26"}}
+        用戶："分析AI本週的情感傾向"
+        推薦調用流程：
+        1. resolve_date_range("本週") → {"date_range": {"start": "2025-11-18", "end": "2025-11-26"}}
         2. analyze_sentiment(topic="AI", date_range={"start": "2025-11-18", "end": "2025-11-26"})
 
-        用户："分析特斯拉最近7天的新闻情感"
-        推荐调用流程：
+        用戶："分析特斯拉最近7天的新聞情感"
+        推薦調用流程：
         1. resolve_date_range("最近7天") → {"date_range": {"start": "2025-11-20", "end": "2025-11-26"}}
         2. analyze_sentiment(topic="特斯拉", date_range={"start": "2025-11-20", "end": "2025-11-26"})
 
-    **重要：数据展示策略**
-    - 本工具返回完整的分析结果和新闻列表
-    - **默认展示方式**：展示完整的分析结果（包括所有新闻）
-    - 仅在用户明确要求"总结"或"挑重点"时才进行筛选
+    **重要：數據展示策略**
+    - 本工具返回完整的分析結果和新聞列表
+    - **默認展示方式**：展示完整的分析結果（包括所有新聞）
+    - 僅在用戶明確要求"總結"或"挑重點"時才進行篩選
     """
     tools = _get_tools()
     result = tools['analytics'].analyze_sentiment(
@@ -403,23 +403,23 @@ async def find_similar_news(
     include_url: bool = False
 ) -> str:
     """
-    查找与指定新闻标题相似的其他新闻
+    查找與指定新聞標題相似的其他新聞
 
     Args:
-        reference_title: 新闻标题（完整或部分）
-        threshold: 相似度阈值，0-1之间，默认0.6
-                   注意：阈值越高匹配越严格，返回结果越少
-        limit: 返回条数限制，默认50，最大100
-               注意：实际返回数量取决于相似度匹配结果，可能少于请求值
-        include_url: 是否包含URL链接，默认False（节省token）
+        reference_title: 新聞標題（完整或部分）
+        threshold: 相似度閾值，0-1之間，默認0.6
+                   注意：閾值越高匹配越嚴格，返回結果越少
+        limit: 返回條數限制，默認50，最大100
+               注意：實際返回數量取決於相似度匹配結果，可能少於請求值
+        include_url: 是否包含URL鏈接，默認False（節省token）
 
     Returns:
-        JSON格式的相似新闻列表，包含相似度分数
+        JSON格式的相似新聞列表，包含相似度分數
 
-    **重要：数据展示策略**
-    - 本工具返回完整的相似新闻列表
-    - **默认展示方式**：展示全部返回的新闻（包括相似度分数）
-    - 仅在用户明确要求"总结"或"挑重点"时才进行筛选
+    **重要：數據展示策略**
+    - 本工具返回完整的相似新聞列表
+    - **默認展示方式**：展示全部返回的新聞（包括相似度分數）
+    - 僅在用戶明確要求"總結"或"挑重點"時才進行篩選
     """
     tools = _get_tools()
     result = tools['analytics'].find_similar_news(
@@ -437,17 +437,17 @@ async def generate_summary_report(
     date_range: Optional[Dict[str, str]] = None
 ) -> str:
     """
-    每日/每周摘要生成器 - 自动生成热点摘要报告
+    每日/每週摘要生成器 - 自動生成熱點摘要報告
 
     Args:
-        report_type: 报告类型（daily/weekly）
-        date_range: **【对象类型】** 自定义日期范围（可选）
+        report_type: 報告類型（daily/weekly）
+        date_range: **【對象類型】** 自定義日期範圍（可選）
                     - **格式**: {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
                     - **示例**: {"start": "2025-01-01", "end": "2025-01-07"}
-                    - **重要**: 必须是对象格式，不能传递整数
+                    - **重要**: 必須是對象格式，不能傳遞整數
 
     Returns:
-        JSON格式的摘要报告，包含Markdown格式内容
+        JSON格式的摘要報告，包含Markdown格式內容
     """
     tools = _get_tools()
     result = tools['analytics'].generate_summary_report(
@@ -457,7 +457,7 @@ async def generate_summary_report(
     return json.dumps(result, ensure_ascii=False, indent=2)
 
 
-# ==================== 智能检索工具 ====================
+# ==================== 智能檢索工具 ====================
 
 @mcp.tool
 async def search_news(
@@ -471,58 +471,58 @@ async def search_news(
     include_url: bool = False
 ) -> str:
     """
-    统一搜索接口，支持多种搜索模式
+    統一搜索接口，支持多種搜索模式
 
-    **重要：日期范围处理**
-    当用户使用"本周"、"最近7天"等自然语言时，请先调用 resolve_date_range 工具获取精确日期：
-    1. 调用 resolve_date_range("本周") → 获取 {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
-    2. 将返回的 date_range 传入本工具
+    **重要：日期範圍處理**
+    當用戶使用"本週"、"最近7天"等自然語言時，請先調用 resolve_date_range 工具獲取精確日期：
+    1. 調用 resolve_date_range("本週") → 獲取 {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
+    2. 將返回的 date_range 傳入本工具
 
     Args:
-        query: 搜索关键词或内容片段
-        search_mode: 搜索模式，可选值：
-            - "keyword": 精确关键词匹配（默认，适合搜索特定话题）
-            - "fuzzy": 模糊内容匹配（适合搜索内容片段，会过滤相似度低于阈值的结果）
-            - "entity": 实体名称搜索（适合搜索人物/地点/机构）
-        date_range: 日期范围（可选）
+        query: 搜索關鍵詞或內容片段
+        search_mode: 搜索模式，可選值：
+            - "keyword": 精確關鍵詞匹配（默認，適合搜索特定話題）
+            - "fuzzy": 模糊內容匹配（適合搜索內容片段，會過濾相似度低於閾值的結果）
+            - "entity": 實體名稱搜索（適合搜索人物/地點/機構）
+        date_range: 日期範圍（可選）
                     - **格式**: {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}
-                    - **获取方式**: 调用 resolve_date_range 工具解析自然语言日期
-                    - **默认**: 不指定时默认查询今天的新闻
-        platforms: 平台ID列表，如 ['zhihu', 'weibo', 'douyin']
-                   - 不指定时：使用 config.yaml 中配置的所有平台
-                   - 支持的平台来自 config/config.yaml 的 platforms 配置
-                   - 每个平台都有对应的name字段（如"知乎"、"微博"），方便AI识别
-        limit: 返回条数限制，默认50，最大1000
-               注意：实际返回数量取决于搜索匹配结果（特别是 fuzzy 模式下会过滤低相似度结果）
-        sort_by: 排序方式，可选值：
-            - "relevance": 按相关度排序（默认）
-            - "weight": 按新闻权重排序
+                    - **獲取方式**: 調用 resolve_date_range 工具解析自然語言日期
+                    - **默認**: 不指定時默認查詢今天的新聞
+        platforms: 平臺ID列表，如 ['zhihu', 'weibo', 'douyin']
+                   - 不指定時：使用 config.yaml 中配置的所有平臺
+                   - 支持的平臺來自 config/config.yaml 的 platforms 配置
+                   - 每個平臺都有對應的name字段（如"知乎"、"微博"），方便AI識別
+        limit: 返回條數限制，默認50，最大1000
+               注意：實際返回數量取決於搜索匹配結果（特別是 fuzzy 模式下會過濾低相似度結果）
+        sort_by: 排序方式，可選值：
+            - "relevance": 按相關度排序（默認）
+            - "weight": 按新聞權重排序
             - "date": 按日期排序
-        threshold: 相似度阈值（仅fuzzy模式有效），0-1之间，默认0.6
-                   注意：阈值越高匹配越严格，返回结果越少
-        include_url: 是否包含URL链接，默认False（节省token）
+        threshold: 相似度閾值（僅fuzzy模式有效），0-1之間，默認0.6
+                   注意：閾值越高匹配越嚴格，返回結果越少
+        include_url: 是否包含URL鏈接，默認False（節省token）
 
     Returns:
-        JSON格式的搜索结果，包含标题、平台、排名等信息
+        JSON格式的搜索結果，包含標題、平臺、排名等信息
 
     Examples:
-        用户："搜索本周的AI新闻"
-        推荐调用流程：
-        1. resolve_date_range("本周") → {"date_range": {"start": "2025-11-18", "end": "2025-11-26"}}
+        用戶："搜索本週的AI新聞"
+        推薦調用流程：
+        1. resolve_date_range("本週") → {"date_range": {"start": "2025-11-18", "end": "2025-11-26"}}
         2. search_news(query="AI", date_range={"start": "2025-11-18", "end": "2025-11-26"})
 
-        用户："最近7天的特斯拉新闻"
-        推荐调用流程：
+        用戶："最近7天的特斯拉新聞"
+        推薦調用流程：
         1. resolve_date_range("最近7天") → {"date_range": {"start": "2025-11-20", "end": "2025-11-26"}}
         2. search_news(query="特斯拉", date_range={"start": "2025-11-20", "end": "2025-11-26"})
 
-        用户："今天的AI新闻"（默认今天，无需解析）
+        用戶："今天的AI新聞"（默認今天，無需解析）
         → search_news(query="AI")
 
-    **重要：数据展示策略**
-    - 本工具返回完整的搜索结果列表
-    - **默认展示方式**：展示全部返回的新闻，无需总结或筛选
-    - 仅在用户明确要求"总结"或"挑重点"时才进行筛选
+    **重要：數據展示策略**
+    - 本工具返回完整的搜索結果列表
+    - **默認展示方式**：展示全部返回的新聞，無需總結或篩選
+    - 僅在用戶明確要求"總結"或"挑重點"時才進行篩選
     """
     tools = _get_tools()
     result = tools['search'].search_news_unified(
@@ -547,29 +547,29 @@ async def search_related_news_history(
     include_url: bool = False
 ) -> str:
     """
-    基于种子新闻，在历史数据中搜索相关新闻
+    基於種子新聞，在歷史數據中搜索相關新聞
 
     Args:
-        reference_text: 参考新闻标题（完整或部分）
-        time_preset: 时间范围预设值，可选：
+        reference_text: 參考新聞標題（完整或部分）
+        time_preset: 時間範圍預設值，可選：
             - "yesterday": 昨天
-            - "last_week": 上周 (7天)
-            - "last_month": 上个月 (30天)
-            - "custom": 自定义日期范围（需要提供 start_date 和 end_date）
-        threshold: 相关性阈值，0-1之间，默认0.4
-                   注意：综合相似度计算（70%关键词重合 + 30%文本相似度）
-                   阈值越高匹配越严格，返回结果越少
-        limit: 返回条数限制，默认50，最大100
-               注意：实际返回数量取决于相关性匹配结果，可能少于请求值
-        include_url: 是否包含URL链接，默认False（节省token）
+            - "last_week": 上週 (7天)
+            - "last_month": 上個月 (30天)
+            - "custom": 自定義日期範圍（需要提供 start_date 和 end_date）
+        threshold: 相關性閾值，0-1之間，默認0.4
+                   注意：綜合相似度計算（70%關鍵詞重合 + 30%文本相似度）
+                   閾值越高匹配越嚴格，返回結果越少
+        limit: 返回條數限制，默認50，最大100
+               注意：實際返回數量取決於相關性匹配結果，可能少於請求值
+        include_url: 是否包含URL鏈接，默認False（節省token）
 
     Returns:
-        JSON格式的相关新闻列表，包含相关性分数和时间分布
+        JSON格式的相關新聞列表，包含相關性分數和時間分佈
 
-    **重要：数据展示策略**
-    - 本工具返回完整的相关新闻列表
-    - **默认展示方式**：展示全部返回的新闻（包括相关性分数）
-    - 仅在用户明确要求"总结"或"挑重点"时才进行筛选
+    **重要：數據展示策略**
+    - 本工具返回完整的相關新聞列表
+    - **默認展示方式**：展示全部返回的新聞（包括相關性分數）
+    - 僅在用戶明確要求"總結"或"挑重點"時才進行篩選
     """
     tools = _get_tools()
     result = tools['search'].search_related_news_history(
@@ -582,22 +582,22 @@ async def search_related_news_history(
     return json.dumps(result, ensure_ascii=False, indent=2)
 
 
-# ==================== 配置与系统管理工具 ====================
+# ==================== 配置與系統管理工具 ====================
 
 @mcp.tool
 async def get_current_config(
     section: str = "all"
 ) -> str:
     """
-    获取当前系统配置
+    獲取當前系統配置
 
     Args:
-        section: 配置节，可选值：
-            - "all": 所有配置（默认）
-            - "crawler": 爬虫配置
+        section: 配置節，可選值：
+            - "all": 所有配置（默認）
+            - "crawler": 爬蟲配置
             - "push": 推送配置
-            - "keywords": 关键词配置
-            - "weights": 权重配置
+            - "keywords": 關鍵詞配置
+            - "weights": 權重配置
 
     Returns:
         JSON格式的配置信息
@@ -610,12 +610,12 @@ async def get_current_config(
 @mcp.tool
 async def get_system_status() -> str:
     """
-    获取系统运行状态和健康检查信息
+    獲取系統運行狀態和健康檢查信息
 
-    返回系统版本、数据统计、缓存状态等信息
+    返回系統版本、數據統計、緩存狀態等信息
 
     Returns:
-        JSON格式的系统状态信息
+        JSON格式的系統狀態信息
     """
     tools = _get_tools()
     result = tools['system'].get_system_status()
@@ -629,35 +629,35 @@ async def trigger_crawl(
     include_url: bool = False
 ) -> str:
     """
-    手动触发一次爬取任务（可选持久化）
+    手動觸發一次爬取任務（可選持久化）
 
     Args:
-        platforms: 指定平台ID列表，如 ['zhihu', 'weibo', 'douyin']
-                   - 不指定时：使用 config.yaml 中配置的所有平台
-                   - 支持的平台来自 config/config.yaml 的 platforms 配置
-                   - 每个平台都有对应的name字段（如"知乎"、"微博"），方便AI识别
-                   - 注意：失败的平台会在返回结果的 failed_platforms 字段中列出
-        save_to_local: 是否保存到本地 output 目录，默认 False
-        include_url: 是否包含URL链接，默认False（节省token）
+        platforms: 指定平臺ID列表，如 ['zhihu', 'weibo', 'douyin']
+                   - 不指定時：使用 config.yaml 中配置的所有平臺
+                   - 支持的平臺來自 config/config.yaml 的 platforms 配置
+                   - 每個平臺都有對應的name字段（如"知乎"、"微博"），方便AI識別
+                   - 注意：失敗的平臺會在返回結果的 failed_platforms 字段中列出
+        save_to_local: 是否保存到本地 output 目錄，默認 False
+        include_url: 是否包含URL鏈接，默認False（節省token）
 
     Returns:
-        JSON格式的任务状态信息，包含：
-        - platforms: 成功爬取的平台列表
-        - failed_platforms: 失败的平台列表（如有）
-        - total_news: 爬取的新闻总数
-        - data: 新闻数据
+        JSON格式的任務狀態信息，包含：
+        - platforms: 成功爬取的平臺列表
+        - failed_platforms: 失敗的平臺列表（如有）
+        - total_news: 爬取的新聞總數
+        - data: 新聞數據
 
     Examples:
-        - 临时爬取: trigger_crawl(platforms=['zhihu'])
-        - 爬取并保存: trigger_crawl(platforms=['weibo'], save_to_local=True)
-        - 使用默认平台: trigger_crawl()  # 爬取config.yaml中配置的所有平台
+        - 臨時爬取: trigger_crawl(platforms=['zhihu'])
+        - 爬取並保存: trigger_crawl(platforms=['weibo'], save_to_local=True)
+        - 使用默認平臺: trigger_crawl()  # 爬取config.yaml中配置的所有平臺
     """
     tools = _get_tools()
     result = tools['system'].trigger_crawl(platforms=platforms, save_to_local=save_to_local, include_url=include_url)
     return json.dumps(result, ensure_ascii=False, indent=2)
 
 
-# ==================== 启动入口 ====================
+# ==================== 啓動入口 ====================
 
 def run_server(
     project_root: Optional[str] = None,
@@ -666,109 +666,109 @@ def run_server(
     port: int = 3333
 ):
     """
-    启动 MCP 服务器
+    啓動 MCP 服務器
 
     Args:
-        project_root: 项目根目录路径
-        transport: 传输模式，'stdio' 或 'http'
-        host: HTTP模式的监听地址，默认 0.0.0.0
-        port: HTTP模式的监听端口，默认 3333
+        project_root: 項目根目錄路徑
+        transport: 傳輸模式，'stdio' 或 'http'
+        host: HTTP模式的監聽地址，默認 0.0.0.0
+        port: HTTP模式的監聽端口，默認 3333
     """
-    # 初始化工具实例
+    # 初始化工具實例
     _get_tools(project_root)
 
-    # 打印启动信息
+    # 打印啓動信息
     print()
     print("=" * 60)
     print("  TrendRadar MCP Server - FastMCP 2.0")
     print("=" * 60)
-    print(f"  传输模式: {transport.upper()}")
+    print(f"  傳輸模式: {transport.upper()}")
 
     if transport == 'stdio':
-        print("  协议: MCP over stdio (标准输入输出)")
-        print("  说明: 通过标准输入输出与 MCP 客户端通信")
+        print("  協議: MCP over stdio (標準輸入輸出)")
+        print("  說明: 通過標準輸入輸出與 MCP 客戶端通信")
     elif transport == 'http':
-        print(f"  协议: MCP over HTTP (生产环境)")
-        print(f"  服务器监听: {host}:{port}")
+        print(f"  協議: MCP over HTTP (生產環境)")
+        print(f"  服務器監聽: {host}:{port}")
 
     if project_root:
-        print(f"  项目目录: {project_root}")
+        print(f"  項目目錄: {project_root}")
     else:
-        print("  项目目录: 当前目录")
+        print("  項目目錄: 當前目錄")
 
     print()
-    print("  已注册的工具:")
-    print("    === 日期解析工具（推荐优先调用）===")
-    print("    0. resolve_date_range       - 解析自然语言日期为标准格式")
+    print("  已註冊的工具:")
+    print("    === 日期解析工具（推薦優先調用）===")
+    print("    0. resolve_date_range       - 解析自然語言日期爲標準格式")
     print()
-    print("    === 基础数据查询（P0核心）===")
-    print("    1. get_latest_news        - 获取最新新闻")
-    print("    2. get_news_by_date       - 按日期查询新闻（支持自然语言）")
-    print("    3. get_trending_topics    - 获取趋势话题")
+    print("    === 基礎數據查詢（P0核心）===")
+    print("    1. get_latest_news        - 獲取最新新聞")
+    print("    2. get_news_by_date       - 按日期查詢新聞（支持自然語言）")
+    print("    3. get_trending_topics    - 獲取趨勢話題")
     print()
-    print("    === 智能检索工具 ===")
-    print("    4. search_news                  - 统一新闻搜索（关键词/模糊/实体）")
-    print("    5. search_related_news_history  - 历史相关新闻检索")
+    print("    === 智能檢索工具 ===")
+    print("    4. search_news                  - 統一新聞搜索（關鍵詞/模糊/實體）")
+    print("    5. search_related_news_history  - 歷史相關新聞檢索")
     print()
-    print("    === 高级数据分析 ===")
-    print("    6. analyze_topic_trend      - 统一话题趋势分析（热度/生命周期/爆火/预测）")
-    print("    7. analyze_data_insights    - 统一数据洞察分析（平台对比/活跃度/关键词共现）")
-    print("    8. analyze_sentiment        - 情感倾向分析")
-    print("    9. find_similar_news        - 相似新闻查找")
-    print("    10. generate_summary_report - 每日/每周摘要生成")
+    print("    === 高級數據分析 ===")
+    print("    6. analyze_topic_trend      - 統一話題趨勢分析（熱度/生命週期/爆火/預測）")
+    print("    7. analyze_data_insights    - 統一數據洞察分析（平臺對比/活躍度/關鍵詞共現）")
+    print("    8. analyze_sentiment        - 情感傾向分析")
+    print("    9. find_similar_news        - 相似新聞查找")
+    print("    10. generate_summary_report - 每日/每週摘要生成")
     print()
-    print("    === 配置与系统管理 ===")
-    print("    11. get_current_config      - 获取当前系统配置")
-    print("    12. get_system_status       - 获取系统运行状态")
-    print("    13. trigger_crawl           - 手动触发爬取任务")
+    print("    === 配置與系統管理 ===")
+    print("    11. get_current_config      - 獲取當前系統配置")
+    print("    12. get_system_status       - 獲取系統運行狀態")
+    print("    13. trigger_crawl           - 手動觸發爬取任務")
     print("=" * 60)
     print()
 
-    # 根据传输模式运行服务器
+    # 根據傳輸模式運行服務器
     if transport == 'stdio':
         mcp.run(transport='stdio')
     elif transport == 'http':
-        # HTTP 模式（生产推荐）
+        # HTTP 模式（生產推薦）
         mcp.run(
             transport='http',
             host=host,
             port=port,
-            path='/mcp'  # HTTP 端点路径
+            path='/mcp'  # HTTP 端點路徑
         )
     else:
-        raise ValueError(f"不支持的传输模式: {transport}")
+        raise ValueError(f"不支持的傳輸模式: {transport}")
 
 
 if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='TrendRadar MCP Server - 新闻热点聚合 MCP 工具服务器',
+        description='TrendRadar MCP Server - 新聞熱點聚合 MCP 工具服務器',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-详细配置教程请查看: README-Cherry-Studio.md
+詳細配置教程請查看: README-Cherry-Studio.md
         """
     )
     parser.add_argument(
         '--transport',
         choices=['stdio', 'http'],
         default='stdio',
-        help='传输模式：stdio (默认) 或 http (生产环境)'
+        help='傳輸模式：stdio (默認) 或 http (生產環境)'
     )
     parser.add_argument(
         '--host',
         default='0.0.0.0',
-        help='HTTP模式的监听地址，默认 0.0.0.0'
+        help='HTTP模式的監聽地址，默認 0.0.0.0'
     )
     parser.add_argument(
         '--port',
         type=int,
         default=3333,
-        help='HTTP模式的监听端口，默认 3333'
+        help='HTTP模式的監聽端口，默認 3333'
     )
     parser.add_argument(
         '--project-root',
-        help='项目根目录路径'
+        help='項目根目錄路徑'
     )
 
     args = parser.parse_args()
