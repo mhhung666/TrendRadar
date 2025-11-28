@@ -662,6 +662,77 @@ class DataFetcher:
 
         return None, id_value
 
+    def fetch_yahoo_finance_news(self, max_retries: int = 2) -> Tuple[Optional[Dict], str]:
+        """爬取 Yahoo Finance 新聞（解析最新新聞頁面）"""
+        url = "https://finance.yahoo.com/topic/latest-news/"
+        id_value = "yahoo_finance"
+
+        proxies = None
+        if self.proxy_url:
+            proxies = {"http": self.proxy_url, "https": self.proxy_url}
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Referer": "https://finance.yahoo.com/",
+            "Connection": "keep-alive",
+        }
+
+        retries = 0
+        while retries <= max_retries:
+            try:
+                response = requests.get(url, proxies=proxies, headers=headers, timeout=15)
+                response.raise_for_status()
+
+                html = response.text
+
+                # 使用正則表達式提取新聞標題和鏈接
+                # 匹配包含完整 URL 的 <a> 標籤
+                pattern = r'<a[^>]*href="(https://finance\.yahoo\.com/news/[^"]+\.html)"[^>]*>(.*?)</a>'
+                matches = re.findall(pattern, html, re.DOTALL)
+
+                if not matches:
+                    raise ValueError("無法獲取新聞列表")
+
+                # 轉換為統一格式
+                result = {}
+                seen_titles = set()
+                idx = 1
+
+                for news_url, content in matches:
+                    # 清理內容中的 HTML 標籤
+                    title = re.sub(r'<[^>]+>', '', content)
+                    title = re.sub(r'\s+', ' ', title).strip()
+
+                    # 過濾有效標題
+                    if title and len(title) > 15 and title not in seen_titles:
+                        # 排除無效標題（包含 URL 或網站名稱）
+                        if not title.startswith('http') and 'yahoo.com' not in title.lower():
+                            seen_titles.add(title)
+
+                            result[title] = {
+                                "ranks": [idx],
+                                "url": news_url,
+                                "mobileUrl": news_url,
+                            }
+                            idx += 1
+
+                print(f"獲取 Yahoo Finance 成功（共 {len(result)} 條新聞）")
+                return result, id_value
+
+            except Exception as e:
+                retries += 1
+                if retries <= max_retries:
+                    wait_time = random.uniform(3, 5) + (retries - 1) * 2
+                    print(f"請求 Yahoo Finance 失敗: {e}. {wait_time:.2f}秒後重試...")
+                    time.sleep(wait_time)
+                else:
+                    print(f"請求 Yahoo Finance 失敗: {e}")
+                    return None, id_value
+
+        return None, id_value
+
     def crawl_websites(
         self,
         ids_list: List[Union[str, Tuple[str, str]]],
@@ -695,6 +766,13 @@ class DataFetcher:
                     results[udn_money_id] = udn_money_result
                 else:
                     failed_ids.append(udn_money_id)
+            # 特殊處理 Yahoo Finance 平台
+            elif id_value == "yahoo_finance":
+                yahoo_result, yahoo_id = self.fetch_yahoo_finance_news()
+                if yahoo_result:
+                    results[yahoo_id] = yahoo_result
+                else:
+                    failed_ids.append(yahoo_id)
             else:
                 # 使用原有的 API 方式
                 response, _, _ = self.fetch_data(id_info)

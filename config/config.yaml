@@ -101,3 +101,5 @@ platforms:
     name: "UDN 聯合新聞網"
   - id: "udn_money"
     name: "UDN 理財網"
+  - id: "yahoo_finance"
+    name: "Yahoo Finance"
