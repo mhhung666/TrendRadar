@@ -592,6 +592,76 @@ class DataFetcher:
 
         return None, id_value
 
+    def fetch_udn_money_news(self, max_retries: int = 2) -> Tuple[Optional[Dict], str]:
+        """爬取 UDN 理財網新聞（解析首頁 HTML）"""
+        url = "https://money.udn.com/money/index"
+        id_value = "udn_money"
+
+        proxies = None
+        if self.proxy_url:
+            proxies = {"http": self.proxy_url, "https": self.proxy_url}
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8",
+            "Referer": "https://money.udn.com/",
+            "Connection": "keep-alive",
+        }
+
+        retries = 0
+        while retries <= max_retries:
+            try:
+                response = requests.get(url, proxies=proxies, headers=headers, timeout=15)
+                response.raise_for_status()
+
+                html = response.text
+
+                # 使用正則表達式提取新聞標題和鏈接
+                # 匹配 <a> 標籤中的 title 屬性和 href
+                pattern = r'<a[^>]*href="(/money/story/\d+/\d+)[^"]*"[^>]*title="([^"]+)"'
+                matches = re.findall(pattern, html)
+
+                if not matches:
+                    raise ValueError("無法獲取新聞列表")
+
+                # 轉換為統一格式
+                result = {}
+                seen_titles = set()
+                idx = 1
+
+                for href, title in matches:
+                    title = title.strip()
+                    # 過濾有效標題（長度大於 5 字符）
+                    if title and len(title) > 5 and title not in seen_titles:
+                        seen_titles.add(title)
+
+                        # 移除 URL 中的查詢參數
+                        clean_href = href.split('?')[0]
+                        full_url = f"https://money.udn.com{clean_href}"
+
+                        result[title] = {
+                            "ranks": [idx],
+                            "url": full_url,
+                            "mobileUrl": full_url,
+                        }
+                        idx += 1
+
+                print(f"獲取 UDN 理財網成功（共 {len(result)} 條新聞）")
+                return result, id_value
+
+            except Exception as e:
+                retries += 1
+                if retries <= max_retries:
+                    wait_time = random.uniform(3, 5) + (retries - 1) * 2
+                    print(f"請求 UDN 理財網失敗: {e}. {wait_time:.2f}秒後重試...")
+                    time.sleep(wait_time)
+                else:
+                    print(f"請求 UDN 理財網失敗: {e}")
+                    return None, id_value
+
+        return None, id_value
+
     def crawl_websites(
         self,
         ids_list: List[Union[str, Tuple[str, str]]],
@@ -618,6 +688,13 @@ class DataFetcher:
                     results[udn_id] = udn_result
                 else:
                     failed_ids.append(udn_id)
+            # 特殊處理 UDN 理財網平台
+            elif id_value == "udn_money":
+                udn_money_result, udn_money_id = self.fetch_udn_money_news()
+                if udn_money_result:
+                    results[udn_money_id] = udn_money_result
+                else:
+                    failed_ids.append(udn_money_id)
             else:
                 # 使用原有的 API 方式
                 response, _, _ = self.fetch_data(id_info)

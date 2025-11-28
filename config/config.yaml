@@ -99,3 +99,5 @@ weight:
 platforms:
   - id: "udn"
     name: "UDN 聯合新聞網"
+  - id: "udn_money"
+    name: "UDN 理財網"
