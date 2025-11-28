@@ -1955,8 +1955,76 @@ def render_html_content(
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>熱點新聞分析</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <style>
+            :root {
+                --bg-gradient-start: #e3f2fd;
+                --bg-gradient-end: #bbdefb;
+                --text-primary: #2d3748;
+                --text-secondary: #4a5568;
+                --text-tertiary: #718096;
+                --text-muted: #a0aec0;
+                --bg-white: #ffffff;
+                --bg-light: #f8fafc;
+                --bg-lighter: #f7fafc;
+                --bg-gray: #edf2f7;
+                --bg-gray-hover: #e2e8f0;
+                --border-color: #e2e8f0;
+                --border-light: #f5f5f5;
+                --shadow-color: rgba(0,0,0,0.05);
+                --shadow-hover: rgba(0,0,0,0.1);
+                --shadow-strong: rgba(0,0,0,0.3);
+                --gradient-primary-start: #667eea;
+                --gradient-primary-end: #764ba2;
+                --gradient-hot-start: #f56565;
+                --gradient-hot-end: #c53030;
+                --gradient-warm-start: #ed8936;
+                --gradient-warm-end: #dd6b20;
+                --gradient-rank-start: #718096;
+                --gradient-rank-end: #4a5568;
+                --error-bg-start: #fff5f5;
+                --error-bg-end: #fed7d7;
+                --error-border: #fc8181;
+                --error-text: #c53030;
+                --error-text-dark: #742a2a;
+                --footer-bg-start: #2d3748;
+                --footer-bg-end: #1a202c;
+                --footer-text: #cbd5e0;
+                --footer-link: #90cdf4;
+                --new-bg-start: #fef3c7;
+                --new-bg-end: #fde68a;
+                --new-border: #fbbf24;
+                --new-badge-start: #f59e0b;
+                --new-badge-end: #d97706;
+            }
+
+            [data-theme="dark"] {
+                --bg-gradient-start: #1a202c;
+                --bg-gradient-end: #2d3748;
+                --text-primary: #e2e8f0;
+                --text-secondary: #cbd5e0;
+                --text-tertiary: #a0aec0;
+                --text-muted: #718096;
+                --bg-white: #2d3748;
+                --bg-light: #1a202c;
+                --bg-lighter: #2d3748;
+                --bg-gray: #4a5568;
+                --bg-gray-hover: #4a5568;
+                --border-color: #4a5568;
+                --border-light: #374151;
+                --shadow-color: rgba(0,0,0,0.3);
+                --shadow-hover: rgba(0,0,0,0.5);
+                --shadow-strong: rgba(0,0,0,0.6);
+                --error-bg-start: #742a2a;
+                --error-bg-end: #9b2c2c;
+                --error-border: #fc8181;
+                --error-text: #feb2b2;
+                --error-text-dark: #fed7d7;
+                --footer-bg-start: #1a202c;
+                --footer-bg-end: #0f1419;
+                --footer-text: #a0aec0;
+                --footer-link: #63b3ed;
+            }
+
             * {
                 box-sizing: border-box;
                 margin: 0;
@@ -1965,21 +2033,53 @@ def render_html_content(
 
             body {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
                 min-height: 100vh;
                 padding: 20px;
-                color: #2d3748;
+                color: var(--text-primary);
                 line-height: 1.6;
+                transition: background 0.3s ease, color 0.3s ease;
+            }
+
+            .theme-toggle {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1000;
+                background: var(--bg-white);
+                border: 2px solid var(--border-color);
+                color: var(--text-primary);
+                padding: 10px 16px;
+                border-radius: 12px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 12px var(--shadow-color);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .theme-toggle:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 16px var(--shadow-hover);
+                border-color: var(--gradient-primary-start);
+            }
+
+            .theme-toggle:active {
+                transform: translateY(0);
             }
 
             .container {
                 max-width: 800px;
                 margin: 0 auto;
-                background: #ffffff;
+                background: var(--bg-white);
                 border-radius: 20px;
                 overflow: hidden;
-                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                box-shadow: 0 20px 60px var(--shadow-strong);
                 animation: fadeInUp 0.6s ease-out;
+                transition: background 0.3s ease, box-shadow 0.3s ease;
             }
 
             @keyframes fadeInUp {
@@ -1994,7 +2094,7 @@ def render_html_content(
             }
 
             .header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%);
                 color: white;
                 padding: 40px 32px;
                 position: relative;
@@ -2107,21 +2207,22 @@ def render_html_content(
 
             .content {
                 padding: 32px;
-                background: #f8fafc;
+                background: var(--bg-light);
+                transition: background 0.3s ease;
             }
 
             .word-group {
                 margin-bottom: 32px;
-                background: white;
+                background: var(--bg-white);
                 border-radius: 16px;
                 padding: 24px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                box-shadow: 0 4px 12px var(--shadow-color);
                 transition: all 0.3s ease;
-                border: 1px solid #e2e8f0;
+                border: 1px solid var(--border-color);
             }
 
             .word-group:hover {
-                box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+                box-shadow: 0 8px 24px var(--shadow-hover);
                 transform: translateY(-2px);
             }
 
@@ -2131,7 +2232,8 @@ def render_html_content(
                 justify-content: space-between;
                 margin-bottom: 20px;
                 padding-bottom: 16px;
-                border-bottom: 2px solid #e2e8f0;
+                border-bottom: 2px solid var(--border-color);
+                transition: border-color 0.3s ease;
             }
 
             .word-info {
@@ -2143,57 +2245,59 @@ def render_html_content(
             .word-name {
                 font-size: 20px;
                 font-weight: 700;
-                color: #1a202c;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: var(--text-primary);
+                background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
             }
 
             .word-count {
-                background: #e2e8f0;
-                color: #4a5568;
+                background: var(--bg-gray-hover);
+                color: var(--text-secondary);
                 font-size: 14px;
                 font-weight: 600;
                 padding: 6px 12px;
                 border-radius: 20px;
+                transition: background 0.3s ease, color 0.3s ease;
             }
 
             .word-count.hot {
-                background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+                background: linear-gradient(135deg, var(--gradient-hot-start) 0%, var(--gradient-hot-end) 100%);
                 color: white;
             }
 
             .word-count.warm {
-                background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+                background: linear-gradient(135deg, var(--gradient-warm-start) 0%, var(--gradient-warm-end) 100%);
                 color: white;
             }
 
             .word-index {
-                color: #a0aec0;
+                color: var(--text-muted);
                 font-size: 13px;
                 font-weight: 600;
-                background: #edf2f7;
+                background: var(--bg-gray);
                 padding: 4px 10px;
                 border-radius: 12px;
+                transition: background 0.3s ease, color 0.3s ease;
             }
 
             .news-item {
                 margin-bottom: 16px;
                 padding: 18px;
-                background: #f7fafc;
+                background: var(--bg-lighter);
                 border-radius: 12px;
                 position: relative;
                 display: flex;
                 gap: 14px;
-                transition: all 0.2s ease;
-                border: 1px solid #e2e8f0;
+                transition: all 0.3s ease;
+                border: 1px solid var(--border-color);
             }
 
             .news-item:hover {
-                background: #edf2f7;
+                background: var(--bg-gray-hover);
                 transform: translateX(4px);
-                border-color: #cbd5e0;
+                border-color: var(--border-color);
             }
 
             .news-item:last-child {
@@ -2201,8 +2305,8 @@ def render_html_content(
             }
 
             .news-item.new {
-                background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-                border-color: #fbbf24;
+                background: linear-gradient(135deg, var(--new-bg-start) 0%, var(--new-bg-end) 100%);
+                border-color: var(--new-border);
             }
 
             .news-item.new::after {
@@ -2210,7 +2314,7 @@ def render_html_content(
                 position: absolute;
                 top: 14px;
                 right: 14px;
-                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                background: linear-gradient(135deg, var(--new-badge-start) 0%, var(--new-badge-end) 100%);
                 color: white;
                 font-size: 10px;
                 font-weight: 800;
@@ -2221,19 +2325,20 @@ def render_html_content(
             }
 
             .news-number {
-                color: #718096;
+                color: var(--text-tertiary);
                 font-size: 14px;
                 font-weight: 700;
                 min-width: 32px;
                 height: 32px;
                 text-align: center;
                 flex-shrink: 0;
-                background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+                background: var(--bg-gray);
                 border-radius: 10px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                box-shadow: 0 2px 4px var(--shadow-color);
+                transition: all 0.3s ease;
             }
 
             .news-content {
@@ -2255,18 +2360,19 @@ def render_html_content(
             }
 
             .source-name {
-                color: #4a5568;
+                color: var(--text-secondary);
                 font-size: 13px;
                 font-weight: 600;
-                background: white;
+                background: var(--bg-white);
                 padding: 4px 10px;
                 border-radius: 8px;
-                border: 1px solid #e2e8f0;
+                border: 1px solid var(--border-color);
+                transition: all 0.3s ease;
             }
 
             .rank-num {
                 color: white;
-                background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+                background: linear-gradient(135deg, var(--gradient-rank-start) 0%, var(--gradient-rank-end) 100%);
                 font-size: 11px;
                 font-weight: 700;
                 padding: 4px 10px;
@@ -2277,22 +2383,23 @@ def render_html_content(
             }
 
             .rank-num.top {
-                background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+                background: linear-gradient(135deg, var(--gradient-hot-start) 0%, var(--gradient-hot-end) 100%);
                 box-shadow: 0 2px 8px rgba(245, 101, 101, 0.4);
             }
 
             .rank-num.high {
-                background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+                background: linear-gradient(135deg, var(--gradient-warm-start) 0%, var(--gradient-warm-end) 100%);
                 box-shadow: 0 2px 8px rgba(237, 137, 54, 0.4);
             }
 
             .time-info {
-                color: #a0aec0;
+                color: var(--text-muted);
                 font-size: 12px;
-                background: white;
+                background: var(--bg-white);
                 padding: 3px 8px;
                 border-radius: 6px;
-                border: 1px solid #e2e8f0;
+                border: 1px solid var(--border-color);
+                transition: all 0.3s ease;
             }
 
             .count-info {
@@ -2307,8 +2414,9 @@ def render_html_content(
             .news-title {
                 font-size: 16px;
                 line-height: 1.5;
-                color: #2d3748;
+                color: var(--text-primary);
                 font-weight: 500;
+                transition: color 0.3s ease;
             }
 
             .news-link {
@@ -2333,23 +2441,25 @@ def render_html_content(
             .new-section {
                 margin-top: 32px;
                 padding: 28px;
-                background: white;
+                background: var(--bg-white);
                 border-radius: 16px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-                border: 1px solid #e2e8f0;
+                box-shadow: 0 4px 12px var(--shadow-color);
+                border: 1px solid var(--border-color);
+                transition: all 0.3s ease;
             }
 
             .new-section-title {
-                color: #1a202c;
+                color: var(--text-primary);
                 font-size: 20px;
                 font-weight: 700;
                 margin: 0 0 24px 0;
                 padding-bottom: 16px;
-                border-bottom: 2px solid #e2e8f0;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-bottom: 2px solid var(--border-color);
+                background: linear-gradient(135deg, var(--gradient-primary-start) 0%, var(--gradient-primary-end) 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
+                transition: border-color 0.3s ease;
             }
 
             .new-source-group {
@@ -2357,14 +2467,15 @@ def render_html_content(
             }
 
             .new-source-title {
-                color: #4a5568;
+                color: var(--text-secondary);
                 font-size: 15px;
                 font-weight: 700;
                 margin: 0 0 14px 0;
                 padding: 10px 14px;
-                background: #f7fafc;
+                background: var(--bg-lighter);
                 border-radius: 10px;
-                border-left: 4px solid #667eea;
+                border-left: 4px solid var(--gradient-primary-start);
+                transition: all 0.3s ease;
             }
 
             .new-item {
@@ -2372,15 +2483,15 @@ def render_html_content(
                 align-items: center;
                 gap: 12px;
                 padding: 12px;
-                background: #f7fafc;
+                background: var(--bg-lighter);
                 border-radius: 10px;
                 margin-bottom: 10px;
-                transition: all 0.2s ease;
-                border: 1px solid #e2e8f0;
+                transition: all 0.3s ease;
+                border: 1px solid var(--border-color);
             }
 
             .new-item:hover {
-                background: #edf2f7;
+                background: var(--bg-gray-hover);
                 transform: translateX(4px);
             }
 
@@ -2389,23 +2500,24 @@ def render_html_content(
             }
 
             .new-item-number {
-                color: #718096;
+                color: var(--text-tertiary);
                 font-size: 13px;
                 font-weight: 700;
                 min-width: 28px;
                 height: 28px;
                 text-align: center;
                 flex-shrink: 0;
-                background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
+                background: var(--bg-gray);
                 border-radius: 8px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                transition: all 0.3s ease;
             }
 
             .new-item-rank {
                 color: white;
-                background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+                background: linear-gradient(135deg, var(--gradient-rank-start) 0%, var(--gradient-rank-end) 100%);
                 font-size: 11px;
                 font-weight: 700;
                 padding: 4px 10px;
@@ -2417,11 +2529,11 @@ def render_html_content(
             }
 
             .new-item-rank.top {
-                background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+                background: linear-gradient(135deg, var(--gradient-hot-start) 0%, var(--gradient-hot-end) 100%);
             }
 
             .new-item-rank.high {
-                background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+                background: linear-gradient(135deg, var(--gradient-warm-start) 0%, var(--gradient-warm-end) 100%);
             }
 
             .new-item-content {
@@ -2432,27 +2544,30 @@ def render_html_content(
             .new-item-title {
                 font-size: 15px;
                 line-height: 1.5;
-                color: #2d3748;
+                color: var(--text-primary);
                 font-weight: 500;
+                transition: color 0.3s ease;
             }
 
             .error-section {
-                background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
-                border: 2px solid #fc8181;
+                background: linear-gradient(135deg, var(--error-bg-start) 0%, var(--error-bg-end) 100%);
+                border: 2px solid var(--error-border);
                 border-radius: 16px;
                 padding: 20px;
                 margin-bottom: 24px;
                 box-shadow: 0 4px 12px rgba(252, 129, 129, 0.15);
+                transition: all 0.3s ease;
             }
 
             .error-title {
-                color: #c53030;
+                color: var(--error-text);
                 font-size: 16px;
                 font-weight: 700;
                 margin: 0 0 12px 0;
                 display: flex;
                 align-items: center;
                 gap: 8px;
+                transition: color 0.3s ease;
             }
 
             .error-list {
@@ -2462,21 +2577,23 @@ def render_html_content(
             }
 
             .error-item {
-                color: #742a2a;
+                color: var(--error-text-dark);
                 font-size: 14px;
                 padding: 6px 12px;
                 margin-bottom: 6px;
                 background: rgba(255, 255, 255, 0.6);
                 border-radius: 8px;
                 font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+                transition: all 0.3s ease;
             }
 
             .footer {
                 margin-top: 0;
                 padding: 28px 32px;
-                background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+                background: linear-gradient(135deg, var(--footer-bg-start) 0%, var(--footer-bg-end) 100%);
                 text-align: center;
-                color: #cbd5e0;
+                color: var(--footer-text);
+                transition: all 0.3s ease;
             }
 
             .footer-content {
@@ -2485,7 +2602,7 @@ def render_html_content(
             }
 
             .footer-link {
-                color: #90cdf4;
+                color: var(--footer-link);
                 text-decoration: none;
                 font-weight: 600;
                 transition: all 0.2s ease;
@@ -2493,13 +2610,14 @@ def render_html_content(
             }
 
             .footer-link:hover {
-                color: #63b3ed;
-                border-bottom-color: #63b3ed;
+                color: var(--footer-link);
+                border-bottom-color: var(--footer-link);
+                opacity: 0.8;
             }
 
             .project-name {
                 font-weight: 700;
-                color: #e2e8f0;
+                color: var(--footer-text);
                 font-size: 15px;
             }
 
@@ -2540,12 +2658,12 @@ def render_html_content(
         </style>
     </head>
     <body>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <span class="theme-icon">🌙</span>
+            <span class="theme-text">暗夜模式</span>
+        </button>
         <div class="container">
             <div class="header">
-                <div class="save-buttons">
-                    <button class="save-btn" onclick="saveAsImage()">保存爲圖片</button>
-                    <button class="save-btn" onclick="saveAsMultipleImages()">分段保存</button>
-                </div>
                 <div class="header-title">熱點新聞分析</div>
                 <div class="header-info">
                     <div class="info-item">
@@ -2794,312 +2912,48 @@ def render_html_content(
                 </div>
             </div>
         </div>
-        
+
         <script>
-            async function saveAsImage() {
-                const button = event.target;
-                const originalText = button.textContent;
-                
-                try {
-                    button.textContent = '生成中...';
-                    button.disabled = true;
-                    window.scrollTo(0, 0);
-                    
-                    // 等待頁面穩定
-                    await new Promise(resolve => setTimeout(resolve, 200));
-                    
-                    // 截圖前隱藏按鈕
-                    const buttons = document.querySelector('.save-buttons');
-                    buttons.style.visibility = 'hidden';
-                    
-                    // 再次等待確保按鈕完全隱藏
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    
-                    const container = document.querySelector('.container');
-                    
-                    const canvas = await html2canvas(container, {
-                        backgroundColor: '#ffffff',
-                        scale: 1.5,
-                        useCORS: true,
-                        allowTaint: false,
-                        imageTimeout: 10000,
-                        removeContainer: false,
-                        foreignObjectRendering: false,
-                        logging: false,
-                        width: container.offsetWidth,
-                        height: container.offsetHeight,
-                        x: 0,
-                        y: 0,
-                        scrollX: 0,
-                        scrollY: 0,
-                        windowWidth: window.innerWidth,
-                        windowHeight: window.innerHeight
-                    });
-                    
-                    buttons.style.visibility = 'visible';
-                    
-                    const link = document.createElement('a');
-                    const now = new Date();
-                    const filename = `TrendRadar_熱點新聞分析_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}.png`;
-                    
-                    link.download = filename;
-                    link.href = canvas.toDataURL('image/png', 1.0);
-                    
-                    // 觸發下載
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    button.textContent = '保存成功!';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false;
-                    }, 2000);
-                    
-                } catch (error) {
-                    const buttons = document.querySelector('.save-buttons');
-                    buttons.style.visibility = 'visible';
-                    button.textContent = '保存失敗';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false;
-                    }, 2000);
+            function toggleTheme() {
+                const html = document.documentElement;
+                const themeToggle = document.querySelector('.theme-toggle');
+                const themeIcon = themeToggle.querySelector('.theme-icon');
+                const themeText = themeToggle.querySelector('.theme-text');
+
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+
+                if (newTheme === 'dark') {
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = '白天模式';
+                } else {
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = '暗夜模式';
                 }
             }
-            
-            async function saveAsMultipleImages() {
-                const button = event.target;
-                const originalText = button.textContent;
-                const container = document.querySelector('.container');
-                const scale = 1.5; 
-                const maxHeight = 5000 / scale;
-                
-                try {
-                    button.textContent = '分析中...';
-                    button.disabled = true;
-                    
-                    // 獲取所有可能的分割元素
-                    const newsItems = Array.from(container.querySelectorAll('.news-item'));
-                    const wordGroups = Array.from(container.querySelectorAll('.word-group'));
-                    const newSection = container.querySelector('.new-section');
-                    const errorSection = container.querySelector('.error-section');
-                    const header = container.querySelector('.header');
-                    const footer = container.querySelector('.footer');
-                    
-                    // 計算元素位置和高度
-                    const containerRect = container.getBoundingClientRect();
-                    const elements = [];
-                    
-                    // 添加header作爲必須包含的元素
-                    elements.push({
-                        type: 'header',
-                        element: header,
-                        top: 0,
-                        bottom: header.offsetHeight,
-                        height: header.offsetHeight
-                    });
-                    
-                    // 添加錯誤信息（如果存在）
-                    if (errorSection) {
-                        const rect = errorSection.getBoundingClientRect();
-                        elements.push({
-                            type: 'error',
-                            element: errorSection,
-                            top: rect.top - containerRect.top,
-                            bottom: rect.bottom - containerRect.top,
-                            height: rect.height
-                        });
-                    }
-                    
-                    // 按word-group分組處理news-item
-                    wordGroups.forEach(group => {
-                        const groupRect = group.getBoundingClientRect();
-                        const groupNewsItems = group.querySelectorAll('.news-item');
-                        
-                        // 添加word-group的header部分
-                        const wordHeader = group.querySelector('.word-header');
-                        if (wordHeader) {
-                            const headerRect = wordHeader.getBoundingClientRect();
-                            elements.push({
-                                type: 'word-header',
-                                element: wordHeader,
-                                parent: group,
-                                top: groupRect.top - containerRect.top,
-                                bottom: headerRect.bottom - containerRect.top,
-                                height: headerRect.height
-                            });
-                        }
-                        
-                        // 添加每個news-item
-                        groupNewsItems.forEach(item => {
-                            const rect = item.getBoundingClientRect();
-                            elements.push({
-                                type: 'news-item',
-                                element: item,
-                                parent: group,
-                                top: rect.top - containerRect.top,
-                                bottom: rect.bottom - containerRect.top,
-                                height: rect.height
-                            });
-                        });
-                    });
-                    
-                    // 添加新增新聞部分
-                    if (newSection) {
-                        const rect = newSection.getBoundingClientRect();
-                        elements.push({
-                            type: 'new-section',
-                            element: newSection,
-                            top: rect.top - containerRect.top,
-                            bottom: rect.bottom - containerRect.top,
-                            height: rect.height
-                        });
-                    }
-                    
-                    // 添加footer
-                    const footerRect = footer.getBoundingClientRect();
-                    elements.push({
-                        type: 'footer',
-                        element: footer,
-                        top: footerRect.top - containerRect.top,
-                        bottom: footerRect.bottom - containerRect.top,
-                        height: footer.offsetHeight
-                    });
-                    
-                    // 計算分割點
-                    const segments = [];
-                    let currentSegment = { start: 0, end: 0, height: 0, includeHeader: true };
-                    let headerHeight = header.offsetHeight;
-                    currentSegment.height = headerHeight;
-                    
-                    for (let i = 1; i < elements.length; i++) {
-                        const element = elements[i];
-                        const potentialHeight = element.bottom - currentSegment.start;
-                        
-                        // 檢查是否需要創建新分段
-                        if (potentialHeight > maxHeight && currentSegment.height > headerHeight) {
-                            // 在前一個元素結束處分割
-                            currentSegment.end = elements[i - 1].bottom;
-                            segments.push(currentSegment);
-                            
-                            // 開始新分段
-                            currentSegment = {
-                                start: currentSegment.end,
-                                end: 0,
-                                height: element.bottom - currentSegment.end,
-                                includeHeader: false
-                            };
-                        } else {
-                            currentSegment.height = potentialHeight;
-                            currentSegment.end = element.bottom;
-                        }
-                    }
-                    
-                    // 添加最後一個分段
-                    if (currentSegment.height > 0) {
-                        currentSegment.end = container.offsetHeight;
-                        segments.push(currentSegment);
-                    }
-                    
-                    button.textContent = `生成中 (0/${segments.length})...`;
-                    
-                    // 隱藏保存按鈕
-                    const buttons = document.querySelector('.save-buttons');
-                    buttons.style.visibility = 'hidden';
-                    
-                    // 爲每個分段生成圖片
-                    const images = [];
-                    for (let i = 0; i < segments.length; i++) {
-                        const segment = segments[i];
-                        button.textContent = `生成中 (${i + 1}/${segments.length})...`;
-                        
-                        // 創建臨時容器用於截圖
-                        const tempContainer = document.createElement('div');
-                        tempContainer.style.cssText = `
-                            position: absolute;
-                            left: -9999px;
-                            top: 0;
-                            width: ${container.offsetWidth}px;
-                            background: white;
-                        `;
-                        tempContainer.className = 'container';
-                        
-                        // 克隆容器內容
-                        const clonedContainer = container.cloneNode(true);
-                        
-                        // 移除克隆內容中的保存按鈕
-                        const clonedButtons = clonedContainer.querySelector('.save-buttons');
-                        if (clonedButtons) {
-                            clonedButtons.style.display = 'none';
-                        }
-                        
-                        tempContainer.appendChild(clonedContainer);
-                        document.body.appendChild(tempContainer);
-                        
-                        // 等待DOM更新
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                        
-                        // 使用html2canvas截取特定區域
-                        const canvas = await html2canvas(clonedContainer, {
-                            backgroundColor: '#ffffff',
-                            scale: scale,
-                            useCORS: true,
-                            allowTaint: false,
-                            imageTimeout: 10000,
-                            logging: false,
-                            width: container.offsetWidth,
-                            height: segment.end - segment.start,
-                            x: 0,
-                            y: segment.start,
-                            windowWidth: window.innerWidth,
-                            windowHeight: window.innerHeight
-                        });
-                        
-                        images.push(canvas.toDataURL('image/png', 1.0));
-                        
-                        // 清理臨時容器
-                        document.body.removeChild(tempContainer);
-                    }
-                    
-                    // 恢復按鈕顯示
-                    buttons.style.visibility = 'visible';
-                    
-                    // 下載所有圖片
-                    const now = new Date();
-                    const baseFilename = `TrendRadar_熱點新聞分析_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
-                    
-                    for (let i = 0; i < images.length; i++) {
-                        const link = document.createElement('a');
-                        link.download = `${baseFilename}_part${i + 1}.png`;
-                        link.href = images[i];
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        
-                        // 延遲一下避免瀏覽器阻止多個下載
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                    }
-                    
-                    button.textContent = `已保存 ${segments.length} 張圖片!`;
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false;
-                    }, 2000);
-                    
-                } catch (error) {
-                    console.error('分段保存失敗:', error);
-                    const buttons = document.querySelector('.save-buttons');
-                    buttons.style.visibility = 'visible';
-                    button.textContent = '保存失敗';
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.disabled = false;
-                    }, 2000);
-                }
-            }
-            
+
             document.addEventListener('DOMContentLoaded', function() {
                 window.scrollTo(0, 0);
+
+                // 載入儲存的主題設定
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                const html = document.documentElement;
+                const themeToggle = document.querySelector('.theme-toggle');
+                const themeIcon = themeToggle.querySelector('.theme-icon');
+                const themeText = themeToggle.querySelector('.theme-text');
+
+                html.setAttribute('data-theme', savedTheme);
+
+                if (savedTheme === 'dark') {
+                    themeIcon.textContent = '☀️';
+                    themeText.textContent = '白天模式';
+                } else {
+                    themeIcon.textContent = '🌙';
+                    themeText.textContent = '暗夜模式';
+                }
             });
         </script>
     </body>
