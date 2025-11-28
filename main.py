@@ -2042,35 +2042,33 @@ def render_html_content(
             }
 
             .theme-toggle {
-                position: absolute;
-                top: 50%;
+                position: fixed;
+                bottom: 32px;
                 right: 32px;
-                transform: translateY(-50%);
-                z-index: 10;
-                background: rgba(255, 255, 255, 0.25);
-                border: 2px solid rgba(255, 255, 255, 0.4);
-                color: white;
+                z-index: 1000;
+                background: var(--bg-white);
+                border: 2px solid var(--border-color);
+                color: var(--text-primary);
                 padding: 8px;
                 border-radius: 50%;
                 cursor: pointer;
                 font-size: 24px;
                 transition: all 0.3s ease;
-                backdrop-filter: blur(10px);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                width: 44px;
-                height: 44px;
+                width: 56px;
+                height: 56px;
+                box-shadow: 0 4px 20px var(--shadow-strong);
             }
 
             .theme-toggle:hover {
-                background: rgba(255, 255, 255, 0.35);
-                border-color: rgba(255, 255, 255, 0.6);
-                transform: translateY(-50%) scale(1.1);
+                transform: scale(1.1);
+                box-shadow: 0 8px 30px var(--shadow-strong);
             }
 
             .theme-toggle:active {
-                transform: translateY(-50%) scale(0.95);
+                transform: scale(0.95);
             }
 
             .container {
@@ -2167,6 +2165,7 @@ def render_html_content(
                 position: relative;
                 letter-spacing: 1px;
                 text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                color: white;
             }
 
             .header-info {
@@ -2633,16 +2632,17 @@ def render_html_content(
                 .header-info { grid-template-columns: 1fr 1fr; gap: 12px; }
                 .info-value { font-size: 18px; }
                 .theme-toggle {
+                    bottom: 24px;
                     right: 24px;
-                    width: 40px;
-                    height: 40px;
-                    font-size: 20px;
+                    width: 50px;
+                    height: 50px;
+                    font-size: 22px;
                 }
             }
 
             @media (max-width: 480px) {
                 body { padding: 8px; }
-                .header { padding: 28px 20px 28px 20px; }
+                .header { padding: 28px 20px; }
                 .header-title { font-size: 22px; margin-bottom: 20px; }
                 .content { padding: 20px 16px; }
                 .word-group { padding: 20px 16px; }
@@ -2653,20 +2653,21 @@ def render_html_content(
                 .news-item { gap: 10px; padding: 14px; }
                 .new-item { gap: 10px; padding: 10px; }
                 .theme-toggle {
+                    bottom: 20px;
                     right: 20px;
-                    width: 36px;
-                    height: 36px;
-                    font-size: 18px;
+                    width: 48px;
+                    height: 48px;
+                    font-size: 20px;
                 }
             }
         </style>
     </head>
     <body>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <span class="theme-icon">🌙</span>
+        </button>
         <div class="container">
             <div class="header">
-                <button class="theme-toggle" onclick="toggleTheme()">
-                    <span class="theme-icon">🌙</span>
-                </button>
                 <div class="header-title">熱點新聞分析</div>
                 <div class="header-info">
                     <div class="info-item">
