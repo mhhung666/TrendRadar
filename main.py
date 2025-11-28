@@ -1957,44 +1957,44 @@ def render_html_content(
         <title>熱點新聞分析</title>
         <style>
             :root {
-                --bg-gradient-start: #e3f2fd;
-                --bg-gradient-end: #bbdefb;
-                --text-primary: #2d3748;
-                --text-secondary: #4a5568;
-                --text-tertiary: #718096;
-                --text-muted: #a0aec0;
+                --bg-gradient-start: #f5f5f5;
+                --bg-gradient-end: #e8e8e8;
+                --text-primary: #1a1a1a;
+                --text-secondary: #4a4a4a;
+                --text-tertiary: #6b6b6b;
+                --text-muted: #999999;
                 --bg-white: #ffffff;
-                --bg-light: #f8fafc;
-                --bg-lighter: #f7fafc;
-                --bg-gray: #edf2f7;
-                --bg-gray-hover: #e2e8f0;
-                --border-color: #e2e8f0;
-                --border-light: #f5f5f5;
-                --shadow-color: rgba(0,0,0,0.05);
-                --shadow-hover: rgba(0,0,0,0.1);
-                --shadow-strong: rgba(0,0,0,0.3);
-                --gradient-primary-start: #667eea;
-                --gradient-primary-end: #764ba2;
-                --gradient-hot-start: #f56565;
-                --gradient-hot-end: #c53030;
-                --gradient-warm-start: #ed8936;
-                --gradient-warm-end: #dd6b20;
-                --gradient-rank-start: #718096;
-                --gradient-rank-end: #4a5568;
-                --error-bg-start: #fff5f5;
-                --error-bg-end: #fed7d7;
-                --error-border: #fc8181;
-                --error-text: #c53030;
-                --error-text-dark: #742a2a;
-                --footer-bg-start: #2d3748;
-                --footer-bg-end: #1a202c;
-                --footer-text: #cbd5e0;
-                --footer-link: #90cdf4;
-                --new-bg-start: #fef3c7;
-                --new-bg-end: #fde68a;
-                --new-border: #fbbf24;
-                --new-badge-start: #f59e0b;
-                --new-badge-end: #d97706;
+                --bg-light: #fafafa;
+                --bg-lighter: #f8f8f8;
+                --bg-gray: #f0f0f0;
+                --bg-gray-hover: #e5e5e5;
+                --border-color: #e0e0e0;
+                --border-light: #f0f0f0;
+                --shadow-color: rgba(0,0,0,0.06);
+                --shadow-hover: rgba(0,0,0,0.12);
+                --shadow-strong: rgba(0,0,0,0.15);
+                --gradient-primary-start: #2c2c2c;
+                --gradient-primary-end: #1a1a1a;
+                --gradient-hot-start: #dc2626;
+                --gradient-hot-end: #b91c1c;
+                --gradient-warm-start: #ea580c;
+                --gradient-warm-end: #c2410c;
+                --gradient-rank-start: #6b6b6b;
+                --gradient-rank-end: #4a4a4a;
+                --error-bg-start: #fef2f2;
+                --error-bg-end: #fee2e2;
+                --error-border: #fca5a5;
+                --error-text: #dc2626;
+                --error-text-dark: #991b1b;
+                --footer-bg-start: #2c2c2c;
+                --footer-bg-end: #1a1a1a;
+                --footer-text: #d4d4d4;
+                --footer-link: #737373;
+                --new-bg-start: #fef9c3;
+                --new-bg-end: #fef08a;
+                --new-border: #facc15;
+                --new-badge-start: #eab308;
+                --new-badge-end: #ca8a04;
             }
 
             [data-theme="dark"] {
@@ -2042,33 +2042,35 @@ def render_html_content(
             }
 
             .theme-toggle {
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1000;
-                background: var(--bg-white);
-                border: 2px solid var(--border-color);
-                color: var(--text-primary);
-                padding: 10px 16px;
-                border-radius: 12px;
+                position: absolute;
+                top: 50%;
+                right: 32px;
+                transform: translateY(-50%);
+                z-index: 10;
+                background: rgba(255, 255, 255, 0.25);
+                border: 2px solid rgba(255, 255, 255, 0.4);
+                color: white;
+                padding: 8px;
+                border-radius: 50%;
                 cursor: pointer;
-                font-size: 14px;
-                font-weight: 600;
+                font-size: 24px;
                 transition: all 0.3s ease;
-                box-shadow: 0 4px 12px var(--shadow-color);
+                backdrop-filter: blur(10px);
                 display: flex;
                 align-items: center;
-                gap: 8px;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
             }
 
             .theme-toggle:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 16px var(--shadow-hover);
-                border-color: var(--gradient-primary-start);
+                background: rgba(255, 255, 255, 0.35);
+                border-color: rgba(255, 255, 255, 0.6);
+                transform: translateY(-50%) scale(1.1);
             }
 
             .theme-toggle:active {
-                transform: translateY(0);
+                transform: translateY(-50%) scale(0.95);
             }
 
             .container {
@@ -2630,12 +2632,18 @@ def render_html_content(
                 .footer { padding: 24px 20px; }
                 .header-info { grid-template-columns: 1fr 1fr; gap: 12px; }
                 .info-value { font-size: 18px; }
+                .theme-toggle {
+                    right: 24px;
+                    width: 40px;
+                    height: 40px;
+                    font-size: 20px;
+                }
             }
 
             @media (max-width: 480px) {
                 body { padding: 8px; }
-                .header { padding: 28px 20px; }
-                .header-title { font-size: 24px; }
+                .header { padding: 28px 20px 28px 20px; }
+                .header-title { font-size: 22px; margin-bottom: 20px; }
                 .content { padding: 20px 16px; }
                 .word-group { padding: 20px 16px; }
                 .new-section { padding: 20px 16px; }
@@ -2644,26 +2652,21 @@ def render_html_content(
                 .news-content { padding-right: 60px; }
                 .news-item { gap: 10px; padding: 14px; }
                 .new-item { gap: 10px; padding: 10px; }
-                .save-buttons {
-                    position: static;
-                    margin-bottom: 20px;
-                    flex-direction: column;
-                    width: 100%;
-                }
-                .save-btn {
-                    width: 100%;
-                    padding: 12px 20px;
+                .theme-toggle {
+                    right: 20px;
+                    width: 36px;
+                    height: 36px;
+                    font-size: 18px;
                 }
             }
         </style>
     </head>
     <body>
-        <button class="theme-toggle" onclick="toggleTheme()">
-            <span class="theme-icon">🌙</span>
-            <span class="theme-text">暗夜模式</span>
-        </button>
         <div class="container">
             <div class="header">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span class="theme-icon">🌙</span>
+                </button>
                 <div class="header-title">熱點新聞分析</div>
                 <div class="header-info">
                     <div class="info-item">
@@ -2916,9 +2919,7 @@ def render_html_content(
         <script>
             function toggleTheme() {
                 const html = document.documentElement;
-                const themeToggle = document.querySelector('.theme-toggle');
-                const themeIcon = themeToggle.querySelector('.theme-icon');
-                const themeText = themeToggle.querySelector('.theme-text');
+                const themeIcon = document.querySelector('.theme-icon');
 
                 const currentTheme = html.getAttribute('data-theme');
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -2926,13 +2927,7 @@ def render_html_content(
                 html.setAttribute('data-theme', newTheme);
                 localStorage.setItem('theme', newTheme);
 
-                if (newTheme === 'dark') {
-                    themeIcon.textContent = '☀️';
-                    themeText.textContent = '白天模式';
-                } else {
-                    themeIcon.textContent = '🌙';
-                    themeText.textContent = '暗夜模式';
-                }
+                themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
             }
 
             document.addEventListener('DOMContentLoaded', function() {
@@ -2941,19 +2936,10 @@ def render_html_content(
                 // 載入儲存的主題設定
                 const savedTheme = localStorage.getItem('theme') || 'light';
                 const html = document.documentElement;
-                const themeToggle = document.querySelector('.theme-toggle');
-                const themeIcon = themeToggle.querySelector('.theme-icon');
-                const themeText = themeToggle.querySelector('.theme-text');
+                const themeIcon = document.querySelector('.theme-icon');
 
                 html.setAttribute('data-theme', savedTheme);
-
-                if (savedTheme === 'dark') {
-                    themeIcon.textContent = '☀️';
-                    themeText.textContent = '白天模式';
-                } else {
-                    themeIcon.textContent = '🌙';
-                    themeText.textContent = '暗夜模式';
-                }
+                themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
             });
         </script>
     </body>
